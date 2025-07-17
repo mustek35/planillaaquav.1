@@ -3,6 +3,7 @@ import pytz
 from datetime import datetime, timedelta, time as datetime_time
 from gevent import sleep
 import psycopg2
+from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
 
 # Configuración de Celery
 app = Celery('voz_tasks', broker='redis://10.11.10.26:6379/0', backend='redis://10.11.10.26:6379/0')
@@ -21,11 +22,11 @@ def get_db_connection(retries=15, delay=2):
     while attempt < retries:
         try:
             conn = psycopg2.connect(
-                host='179.57.170.61',
-                port='24301',
-                database='Aquachile',
-                user='orca',
-                password='estadoscam.'
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASS
             )
             return conn
         except psycopg2.OperationalError as e:

@@ -2,6 +2,17 @@ import os
 import logging
 import paramiko
 import psycopg2
+from config import (
+    DB_HOST,
+    DB_PORT,
+    DB_NAME,
+    DB_USER,
+    DB_PASS,
+    SFTP_HOST,
+    SFTP_PORT,
+    SFTP_USER,
+    SFTP_PASS,
+)
 import base64
 import threading
 from flask import Flask, jsonify, render_template, send_file, Response, url_for, make_response
@@ -71,11 +82,11 @@ def alarm_updater():
             socketio.emit('alarms_update', alarms_data)
 def get_db_connection():
     conn = psycopg2.connect(
-        host='179.57.170.61',
-        port='24301',
-        database='Aquachile',
-        user='orca',
-        password='estadoscam.'
+        host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS
     )
     return conn
 
@@ -132,7 +143,7 @@ def compare_videos(video1, video2):
     return 0
 
 def get_video_urls():
-    sftp = create_sftp_client('179.57.170.61', 2222, 'sql', '753524')
+    sftp = create_sftp_client(SFTP_HOST, SFTP_PORT, SFTP_USER, SFTP_PASS)
     videos = sftp.listdir('/home/videos')
     sftp.close()
     # Filtrar y ordenar los videos que siguen el formato correcto
@@ -149,7 +160,7 @@ def get_video_urls():
     return video_urls
 
 def get_latest_video():
-    sftp = create_sftp_client('179.57.170.61', 2222, 'sql', '753524')
+    sftp = create_sftp_client(SFTP_HOST, SFTP_PORT, SFTP_USER, SFTP_PASS)
     videos = sftp.listdir('/home/videos')
     sftp.close()
     latest_video = None
@@ -240,7 +251,7 @@ def video(filename):
     decoded_filename = unquote(filename)
     local_file_path = os.path.join('/home/estadoscam/mi_flask_env/proyecto2/videos', decoded_filename)
     if not os.path.isfile(local_file_path):
-        sftp = create_sftp_client('179.57.170.61', 2222, 'sql', '753524')
+        sftp = create_sftp_client(SFTP_HOST, SFTP_PORT, SFTP_USER, SFTP_PASS)
         try:
             sftp.get(f'/home/videos/{filename}', local_file_path)
         except Exception as e:

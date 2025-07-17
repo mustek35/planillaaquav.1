@@ -3,6 +3,7 @@ import ujson as json  # Usar ujson para serialización más rápida
 import redis
 import psycopg2
 import psycopg2.pool
+from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
 import pytz
 from celery import Celery
 from datetime import datetime
@@ -25,11 +26,11 @@ app.conf.update(
 # Crear un pool de conexiones para la base de datos
 db_pool = psycopg2.pool.SimpleConnectionPool(
     1, 20,  # Mínimo 1 y máximo 20 conexiones en el pool
-    host='179.57.170.61',
-    port='24301',
-    database='Aquachile',
-    user='orca',
-    password='estadoscam.'
+    host=DB_HOST,
+    port=DB_PORT,
+    database=DB_NAME,
+    user=DB_USER,
+    password=DB_PASS
 )
 
 # Función para obtener una conexión desde el pool de conexiones

@@ -13,10 +13,12 @@ let autoHideTimeout;
 let lastAnnouncedTimestamp = 0;
 let imageFetchTimeout;
 let worker;
+let dataWorker;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeSocket();
     initializeWorker();
+    initializeDataWorker();
     initializeDOMElements();
     attachEventListeners();
     setupAlertTableClickHandlers();
@@ -104,6 +106,21 @@ function terminateWorker() {
         worker = undefined;
     } else {
         console.warn("No hay Worker activo para terminar.");
+    }
+}
+
+function initializeDataWorker() {
+    if (typeof Worker !== 'undefined') {
+        if (!dataWorker) {
+            dataWorker = new Worker('/static/js/dataWorker.js');
+        }
+    }
+}
+
+function terminateDataWorker() {
+    if (dataWorker) {
+        dataWorker.terminate();
+        dataWorker = undefined;
     }
 }
 function initializeDOMElements() {
@@ -222,16 +239,29 @@ document.querySelector('.close').addEventListener('click', function() {
 });
 
 function applyFilterAndUpdateTable() {
-    const filteredData = alarmsData.filter(alarm => {
-        return matchesSearchTerm(alarm, currentSearchTerm) && matchesFilter(alarm, currentFilter);
-    });
-
-    updateAlarmsTable(filteredData);  // Actualiza la tabla
-
-    // Verifica si es necesario actualizar el gráfico
-    if (typeof prepareBarChartData === 'function') {
-        const barChartData = prepareBarChartData(filteredData);
-        updateBarChart(barChartData);  // Actualiza el gráfico de barras
+    if (dataWorker) {
+        dataWorker.onmessage = function(e) {
+            const filteredData = e.data;
+            updateAlarmsTable(filteredData);
+            if (typeof prepareBarChartData === 'function') {
+                const barChartData = prepareBarChartData(filteredData);
+                updateBarChart(barChartData);
+            }
+        };
+        dataWorker.postMessage({
+            alarmsData: alarmsData,
+            searchTerm: currentSearchTerm,
+            filter: currentFilter
+        });
+    } else {
+        const filteredData = alarmsData.filter(alarm => {
+            return matchesSearchTerm(alarm, currentSearchTerm) && matchesFilter(alarm, currentFilter);
+        });
+        updateAlarmsTable(filteredData);
+        if (typeof prepareBarChartData === 'function') {
+            const barChartData = prepareBarChartData(filteredData);
+            updateBarChart(barChartData);
+        }
     }
 }
 

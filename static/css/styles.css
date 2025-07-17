@@ -228,11 +228,6 @@ tbody tr:hover {
     border-radius: 5px; /* Redondea los bordes con un radio de 5px */
     padding: 10px; /* Añade un poco de espacio dentro del borde para que el contenido no esté pegado al borde */
 }
-
-/* Estilo para filas no gestionadas */
-.no-gestionado-row {
-    background-color: rgba(255, 0, 0, 0.2); /* Tono rojizo transparente */
-}
 .time-icon {
     width: 28px; /* Puedes ajustar el tamaño según tus necesidades */
     height: 28px;

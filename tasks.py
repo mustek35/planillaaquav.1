@@ -107,6 +107,11 @@ def update_observation_in_db(self, alarm_id, observation, observation_timestamp,
 
                 gestionado_dentro = None
                 if detection_time:
+                    if detection_time.tzinfo is None:
+                        detection_time = chile_tz.localize(detection_time)
+                    else:
+                        detection_time = detection_time.astimezone(chile_tz)
+
                     diff = (observation_timestamp - detection_time).total_seconds() / 60.0
                     gestionado_dentro = diff <= 10
 
@@ -132,12 +137,15 @@ def update_observation_in_db(self, alarm_id, observation, observation_timestamp,
                     ),
                 )
                 conn.commit()
+                return gestionado_dentro
     except Exception as e:
         logger.error(f"Error actualizando observación: {e}")
         raise
     finally:
         total_time = time.time() - start_time
-        logger.warning(f"Tiempo total para update_observation_in_db: {total_time:.4f} segundos")
+        logger.warning(
+            f"Tiempo total para update_observation_in_db: {total_time:.4f} segundos"
+        )
 
 @celery.task
 def voz_data_updater_task():

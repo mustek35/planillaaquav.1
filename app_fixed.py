@@ -526,6 +526,11 @@ def update_observation_in_db_sync(alarm_id, observation, observation_timestamp=N
         detection_time = result[0] if result else None
         gestionado_dentro = None
         if detection_time:
+            if detection_time.tzinfo is None:
+                detection_time = chile_tz.localize(detection_time)
+            else:
+                detection_time = detection_time.astimezone(chile_tz)
+
             diff_minutes = (observation_timestamp - detection_time).total_seconds() / 60.0
             gestionado_dentro = diff_minutes <= 10
         cursor.execute("""
@@ -550,6 +555,7 @@ def update_observation_in_db_sync(alarm_id, observation, observation_timestamp=N
         cursor.close()
         conn.close()
         logger.info(f"Observación actualizada para alarma {alarm_id}")
+        return gestionado_dentro
     except Exception as e:
         logger.error(f"Error actualizando observación: {e}")
         raise
@@ -664,14 +670,23 @@ def handle_update_observation(data):
             observation_timestamp = isoparse(observation_timestamp)
         
         # Actualizar observación de forma síncrona
-        update_observation_in_db_sync(alarm_id, observation, observation_timestamp, action)
-        
-        emit('observation_updated', {
-            'id': alarm_id,
-            'observation': observation,
-            'observation_timestamp': observation_timestamp.isoformat() if observation_timestamp else None,
-            'action': action
-        }, broadcast=True)
+        gestionado_dentro = update_observation_in_db_sync(
+            alarm_id, observation, observation_timestamp, action
+        )
+
+        emit(
+            'observation_updated',
+            {
+                'id': alarm_id,
+                'observation': observation,
+                'observation_timestamp': observation_timestamp.isoformat()
+                if observation_timestamp
+                else None,
+                'action': action,
+                'gestionado_dentro_de_tiempo': gestionado_dentro,
+            },
+            broadcast=True,
+        )
         
     except Exception as e:
         logger.error(f"Error actualizando observación: {e}")

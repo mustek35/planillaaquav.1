@@ -69,6 +69,18 @@ document.getElementById('logo').addEventListener('click', function() {
             console.log("Datos de voz recibidos:", data);
             handleVozDataUpdate(data);
         });
+
+        socket.on('observation_updated', function(data) {
+            console.log('Observación actualizada:', data);
+            const alarm = alarmsData.find(a => String(a.id) === String(data.id));
+            if (alarm) {
+                alarm.observacion = data.observation;
+                alarm.gestionado_time = data.observation_timestamp;
+                alarm.gestionado = data.observation.trim() !== '';
+                alarm.gestionado_dentro_de_tiempo = data.gestionado_dentro_de_tiempo;
+            }
+            updateAlarmRow(data.id, data.observation, data.observation_timestamp);
+        });
     }
 
         

@@ -569,17 +569,40 @@ def get_alerts_data(start_time=None, end_time=None):
         return []
 
 def update_observation_in_db_sync(alarm_id, observation, observation_timestamp, action):
+    """Actualizar observación de alarma y calcular si fue gestionada a tiempo."""
     try:
         chile_tz = timezone('America/Santiago')
-        observation_timestamp = observation_timestamp.astimezone(chile_tz)  # Convertir a la zona horaria de Chile
+        observation_timestamp = observation_timestamp.astimezone(chile_tz)
 
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("""
+                # Obtener la hora de detección para calcular la diferencia
+                cursor.execute("SELECT timestamp FROM alarmas WHERE id = %s", (alarm_id,))
+                result = cursor.fetchone()
+                detection_time = result[0] if result else None
+
+                gestionado_dentro = None
+                if detection_time:
+                    diff_minutes = (observation_timestamp - detection_time).total_seconds() / 60.0
+                    gestionado_dentro = diff_minutes <= 10
+
+                cursor.execute(
+                    """
                     UPDATE alarmas
-                    SET observacion = %s, observation_timestamp = %s, observacion_texto = %s, accion = %s
+                    SET observacion = %s, observation_timestamp = %s, observacion_texto = %s,
+                        accion = %s, gestionado_time = %s, gestionado_dentro_de_tiempo = %s
                     WHERE id = %s
-                """, (observation, observation_timestamp, observation, action, alarm_id))
+                    """,
+                    (
+                        observation,
+                        observation_timestamp,
+                        observation,
+                        action,
+                        observation_timestamp,
+                        gestionado_dentro,
+                        alarm_id,
+                    ),
+                )
                 conn.commit()
     except psycopg2.Error as e:
         print(f"Error updating observation in the database: {e}")

@@ -8,6 +8,7 @@ import logging
 import signal
 import sys
 import psycopg2
+from database import db_manager
 import pytz
 import base64
 from datetime import datetime, timedelta, time as datetime_time
@@ -305,58 +306,51 @@ def get_alarms_data(start_time=None, end_time=None):
 
 def get_alarms_data_for_calendar(start_date, end_date, start_time, end_time):
     """Obtener datos de alarmas para calendario"""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
     try:
-        if start_date == end_date:
-            query = """
-            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
-                   timestamp::date AS fecha, timestamp::time AS hora
-            FROM alarmas
-            WHERE timestamp::date = %s AND timestamp::time BETWEEN %s AND %s
-            ORDER BY timestamp DESC
-            """
-            cursor.execute(query, (start_date, start_time, end_time))
-        else:
-            query = """
-            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
-                   timestamp::date AS fecha, timestamp::time AS hora
-            FROM alarmas
-            WHERE (
-                    (timestamp::date = %s AND timestamp::time >= %s) OR
-                    (timestamp::date = %s AND timestamp::time <= %s)
-                  )
-            ORDER BY timestamp DESC
-            """
-            cursor.execute(query, (start_date, start_time, end_date, end_time))
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                if start_date == end_date:
+                    query = """
+                    SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
+                           timestamp::date AS fecha, timestamp::time AS hora
+                    FROM alarmas
+                    WHERE timestamp::date = %s AND timestamp::time BETWEEN %s AND %s
+                    ORDER BY timestamp DESC
+                    """
+                    cursor.execute(query, (start_date, start_time, end_time))
+                else:
+                    query = """
+                    SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
+                           timestamp::date AS fecha, timestamp::time AS hora
+                    FROM alarmas
+                    WHERE (
+                            (timestamp::date = %s AND timestamp::time >= %s) OR
+                            (timestamp::date = %s AND timestamp::time <= %s)
+                          )
+                    ORDER BY timestamp DESC
+                    """
+                    cursor.execute(query, (start_date, start_time, end_date, end_time))
 
-        alarms_data = cursor.fetchall()
-        return [
-            {
-                'id': alarm[0],
-                'centro': alarm[1],
-                'duracion': alarm[2],
-                'en_modulo': alarm[3],
-                'estado_verificacion': alarm[4],
-                'observacion': alarm[5],
-                'fecha': alarm[6].strftime('%Y-%m-%d'),
-                'hora': alarm[7].strftime('%H:%M:%S')
-            } for alarm in alarms_data
-        ]
+                alarms_data = cursor.fetchall()
+                return [
+                    {
+                        'id': alarm[0],
+                        'centro': alarm[1],
+                        'duracion': alarm[2],
+                        'en_modulo': alarm[3],
+                        'estado_verificacion': alarm[4],
+                        'observacion': alarm[5],
+                        'fecha': alarm[6].strftime('%Y-%m-%d'),
+                        'hora': alarm[7].strftime('%H:%M:%S')
+                    } for alarm in alarms_data
+                ]
     except Exception as e:
         logger.error(f"Error ejecutando la consulta de alarmas: {e}")
         raise e
-    finally:
-        cursor.close()
-        conn.close()
 
 def get_alerts_data(start_time=None, end_time=None):
     """Obtener datos de alertas"""
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
         timezone = pytz.timezone('America/Santiago')
         now = datetime.now(timezone)
         
@@ -368,23 +362,23 @@ def get_alerts_data(start_time=None, end_time=None):
                 end_time = now.replace(hour=7, minute=30, second=0, microsecond=0)
                 start_time = (end_time - timedelta(days=1)).replace(hour=18, minute=30, second=0, microsecond=0)
         
-        cursor.execute("""
+        query = """
             SELECT timestamp, centro, alerta, contador
             FROM alertas
             WHERE timestamp BETWEEN %s AND %s
             ORDER BY timestamp DESC
-        """, (start_time, end_time))
-        
-        alerts = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        
-        return [{
-            'timestamp': alert[0].strftime('%Y-%m-%d %H:%M:%S'),
-            'centro': alert[1],
-            'alerta': alert[2],
-            'contador': alert[3],
-        } for alert in alerts]
+        """
+
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (start_time, end_time))
+                alerts = cursor.fetchall()
+                return [{
+                    'timestamp': alert[0].strftime('%Y-%m-%d %H:%M:%S'),
+                    'centro': alert[1],
+                    'alerta': alert[2],
+                    'contador': alert[3],
+                } for alert in alerts]
         
     except Exception as e:
         logger.error(f"Error obteniendo datos de alertas: {e}")
@@ -393,32 +387,29 @@ def get_alerts_data(start_time=None, end_time=None):
 def get_voz_data():
     """Obtener datos de voz recientes"""
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
         timezone = pytz.timezone('America/Santiago')
         now = datetime.now(timezone)
-        
+
         # Últimos 5 minutos
         time_interval = now - timedelta(minutes=5)
 
-        cursor.execute("""
+        query = """
             SELECT timestamp, centro, zonadealarma, imagen
-            FROM voz 
-            WHERE timestamp BETWEEN %s AND %s 
+            FROM voz
+            WHERE timestamp BETWEEN %s AND %s
             ORDER BY timestamp DESC
-        """, (time_interval, now))
-        
-        records = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        
-        return [{
-            'timestamp': record[0].strftime('%Y-%m-%d %H:%M:%S'),
-            'centro': record[1],
-            'zonadealarma': record[2],
-            'imagen': record[3] or ''
-        } for record in records]
+        """
+
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (time_interval, now))
+                records = cursor.fetchall()
+                return [{
+                    'timestamp': record[0].strftime('%Y-%m-%d %H:%M:%S'),
+                    'centro': record[1],
+                    'zonadealarma': record[2],
+                    'imagen': record[3] or ''
+                } for record in records]
         
     except Exception as e:
         logger.error(f"Error obteniendo datos de voz: {e}")

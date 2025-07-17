@@ -35,6 +35,7 @@ from tasks import update_observation_in_db  # Importar desde tasks.py
 from celery.result import AsyncResult
 from sqlalchemy.sql import text
 from datetime import datetime, time as datetime_time
+from database import db_manager
 
 # Inicializa una variable para almacenar el último timestamp procesado
 last_processed_timestamp = None
@@ -191,51 +192,47 @@ def start_voice_data_updater():
     voz_data_updater.apply_async()    
     
 def get_alarms_data_for_calendar(start_date, end_date, start_time, end_time):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
     try:
-        if start_date == end_date:
-            query = """
-            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
-                   timestamp::date AS fecha, timestamp::time AS hora
-            FROM alarmas
-            WHERE timestamp::date = %s AND timestamp::time BETWEEN %s AND %s
-            ORDER BY timestamp DESC
-            """
-            cursor.execute(query, (start_date, start_time, end_time))
-        else:
-            query = """
-            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
-                   timestamp::date AS fecha, timestamp::time AS hora
-            FROM alarmas
-            WHERE (
-                    (timestamp::date = %s AND timestamp::time >= %s) OR
-                    (timestamp::date = %s AND timestamp::time <= %s)
-                  )
-            ORDER BY timestamp DESC
-            """
-            cursor.execute(query, (start_date, start_time, end_date, end_time))
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                if start_date == end_date:
+                    query = """
+                    SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
+                           timestamp::date AS fecha, timestamp::time AS hora
+                    FROM alarmas
+                    WHERE timestamp::date = %s AND timestamp::time BETWEEN %s AND %s
+                    ORDER BY timestamp DESC
+                    """
+                    cursor.execute(query, (start_date, start_time, end_time))
+                else:
+                    query = """
+                    SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion,
+                           timestamp::date AS fecha, timestamp::time AS hora
+                    FROM alarmas
+                    WHERE (
+                            (timestamp::date = %s AND timestamp::time >= %s) OR
+                            (timestamp::date = %s AND timestamp::time <= %s)
+                          )
+                    ORDER BY timestamp DESC
+                    """
+                    cursor.execute(query, (start_date, start_time, end_date, end_time))
 
-        alarms_data = cursor.fetchall()
-        return [
-            {
-                'id': alarm[0],
-                'centro': alarm[1],
-                'duracion': alarm[2],
-                'en_modulo': alarm[3],
-                'estado_verificacion': alarm[4],
-                'observacion': alarm[5],
-                'fecha': alarm[6].strftime('%Y-%m-%d'),
-                'hora': alarm[7].strftime('%H:%M:%S')
-            } for alarm in alarms_data
-        ]
+                alarms_data = cursor.fetchall()
+                return [
+                    {
+                        'id': alarm[0],
+                        'centro': alarm[1],
+                        'duracion': alarm[2],
+                        'en_modulo': alarm[3],
+                        'estado_verificacion': alarm[4],
+                        'observacion': alarm[5],
+                        'fecha': alarm[6].strftime('%Y-%m-%d'),
+                        'hora': alarm[7].strftime('%H:%M:%S')
+                    } for alarm in alarms_data
+                ]
     except Exception as e:
         app.logger.error(f"Error ejecutando la consulta de alarmas: {e}")
         raise e
-    finally:
-        cursor.close()
-        conn.close()
 
 @app.route('/get_alarms_data_for_calendar', methods=['POST'])
 def get_alarms_data_for_calendar_route():
@@ -540,8 +537,6 @@ def get_all_data():
 
 # Obtener datos de alertas
 def get_alerts_data(start_time=None, end_time=None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
     timezone = pytz.timezone('America/Santiago')
     now = datetime.now(timezone)
     if start_time is None or end_time is None:
@@ -559,20 +554,19 @@ def get_alerts_data(start_time=None, end_time=None):
     ORDER BY timestamp DESC
     """
     try:
-        cursor.execute(query, (start_time, end_time))
-        alerts = cursor.fetchall()
-        return [{
-            'timestamp': alert[0].strftime('%Y-%m-%d %H:%M:%S'),
-            'centro': alert[1],
-            'alerta': alert[2],
-            'contador': alert[3],
-        } for alert in alerts]
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (start_time, end_time))
+                alerts = cursor.fetchall()
+                return [{
+                    'timestamp': alert[0].strftime('%Y-%m-%d %H:%M:%S'),
+                    'centro': alert[1],
+                    'alerta': alert[2],
+                    'contador': alert[3],
+                } for alert in alerts]
     except psycopg2.Error as e:
         print(f"Error retrieving data from alertas table: {e}")
         return []
-    finally:
-        cursor.close()
-        conn.close()
 
 def update_observation_in_db_sync(alarm_id, observation, observation_timestamp, action):
     try:
@@ -591,7 +585,7 @@ def update_observation_in_db_sync(alarm_id, observation, observation_timestamp, 
         print(f"Error updating observation in the database: {e}")
 
 def get_voz_data():
-    with get_db_connection() as conn:
+    with db_manager.get_connection() as conn:
         with conn.cursor() as cursor:
             timezone = pytz.timezone('America/Santiago')
             now = datetime.now(timezone)

@@ -69,6 +69,18 @@ document.getElementById('logo').addEventListener('click', function() {
             console.log("Datos de voz recibidos:", data);
             handleVozDataUpdate(data);
         });
+
+        socket.on('observation_updated', function(data) {
+            console.log('Observación actualizada:', data);
+            const alarm = alarmsData.find(a => String(a.id) === String(data.id));
+            if (alarm) {
+                alarm.observacion = data.observation;
+                alarm.gestionado_time = data.observation_timestamp;
+                alarm.gestionado = data.observation.trim() !== '';
+                alarm.gestionado_dentro_de_tiempo = data.gestionado_dentro_de_tiempo;
+            }
+            updateAlarmRow(data.id, data.observation, data.observation_timestamp);
+        });
     }
 
         
@@ -813,6 +825,8 @@ function updateAlarmsTable(filteredData) {
 
         if (alarm.gestionado) {
             row.classList.add('gestionado-row');
+        } else {
+            row.classList.add('no-gestionado-row');
         }
 
         if (selectedAlarmIds.has(alarm.id)) {
@@ -858,11 +872,13 @@ function updateAlarmRow(alarmId, newObservation, observationTimestamp) {
 
             if (newObservation.trim() !== "") {
                 centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${localTime}</span>`;
+                row.classList.remove('no-gestionado-row');
                 row.classList.add('gestionado-row');
                 row.setAttribute('data-gestionado-time', localTime);
             } else {
                 const existingTime = row.getAttribute('data-gestionado-time');
                 centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${existingTime || localTime}</span>`;
+                row.classList.remove('no-gestionado-row');
                 row.classList.add('gestionado-row');
                 row.setAttribute('data-gestionado-time', existingTime || localTime);
             }

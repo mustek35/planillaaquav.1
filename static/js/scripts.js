@@ -190,8 +190,17 @@ function handleVozDataUpdate(data) {
     console.log("Procesando datos de voz:", data);
     const tbody = document.getElementById('second-table').getElementsByTagName('tbody')[0];
     tbody.innerHTML = '';  // Limpia la tabla antes de insertar nuevos datos
-    let latestTimestamp = 0;
-    let latestData = null;
+
+    const zonasCriticas = [
+        "Embarcación",
+        "Area",
+        "Módulo",
+        "Zona Crítica",
+        "Persona detectada en el area de Combustible"
+    ];
+
+    let newMaxTimestamp = lastAnnouncedTimestamp;
+    const pendingAnnouncements = [];
 
     data.forEach(function(item) {
         const row = tbody.insertRow();
@@ -205,22 +214,33 @@ function handleVozDataUpdate(data) {
         zonaDeAlarmaCell.textContent = item.zonadealarma;
 
         const timestampValue = new Date(item.timestamp).valueOf();
-        if (timestampValue > latestTimestamp) {
-            latestTimestamp = timestampValue;
-            latestData = item;
+
+        // Registrar nuevas detecciones que no hayan sido anunciadas
+        if (timestampValue > lastAnnouncedTimestamp) {
+            if (zonasCriticas.includes(item.zonadealarma)) {
+                pendingAnnouncements.push({
+                    timestamp: timestampValue,
+                    centro: item.centro
+                });
+            }
+
+            if (timestampValue > newMaxTimestamp) {
+                newMaxTimestamp = timestampValue;
+            }
         }
     });
 
-    // Verifica si debe anunciarse una nueva alerta
-    if (latestTimestamp > lastAnnouncedTimestamp) {
-        lastAnnouncedTimestamp = latestTimestamp;
+    // Ordenar las nuevas detecciones por timestamp ascendente para anunciar en orden
+    pendingAnnouncements.sort((a, b) => a.timestamp - b.timestamp);
 
-        const zonasCriticas = ["Embarcación", "Area", "Módulo", "Zona Crítica", "Persona detectada en el area de Combustible"];
-        if (latestData && zonasCriticas.includes(latestData.zonadealarma)) {
-            const message = `${latestData.zonadealarma} ${latestData.centro}`;
-            alertQueue.push({ message });
-            processAlertQueue();  // Inicia el procesamiento de la cola
-        }
+    pendingAnnouncements.forEach(item => {
+        const message = `${item.centro}`;  // Solo anunciar el nombre del centro
+        alertQueue.push({ message });
+    });
+
+    if (pendingAnnouncements.length > 0) {
+        lastAnnouncedTimestamp = newMaxTimestamp;
+        processAlertQueue(); // Inicia el procesamiento de la cola
     }
 }
 

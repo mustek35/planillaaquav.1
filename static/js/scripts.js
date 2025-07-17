@@ -120,6 +120,16 @@ function attachEventListeners() {
     });
 
     document.getElementById('soundToggle').addEventListener('click', toggleSound);
+
+    const editArea = document.getElementById('editObservation');
+    if (editArea) {
+        editArea.addEventListener('input', function() {
+            const text = this.value;
+            selectedAlarmIds.forEach(id => {
+                localObservations[id] = text;
+            });
+        });
+    }
 }
 
 function toggleSound() {
@@ -738,6 +748,8 @@ function updateAlarmsTable(filteredData) {
         // Usa la función getTimeIcon en lugar de la lógica duplicada
         const timeIcon = getTimeIcon(alarm);
 
+        const observationText = localObservations.hasOwnProperty(alarm.id) ? localObservations[alarm.id] : alarm.observacion;
+
         row.innerHTML = `
             <td>${alarm.fecha}</td>
             <td>${alarm.hora} ${timeIcon}</td>
@@ -747,7 +759,7 @@ function updateAlarmsTable(filteredData) {
             <td>${getIconForVerificationState(alarm.estado_verificacion)} ${alarm.estado_verificacion}
                 ${alarm.estado_verificacion === 'Persona detectada' ? `<i class="fas fa-image fa-lg icon-spacing icon-image" data-alarm-id="${alarm.id}"></i>` : ''}
             </td>
-            <td>${alarm.observacion}</td>`;
+            <td>${observationText}</td>`;
 
         if (alarm.gestionado) {
             row.classList.add('gestionado-row');
@@ -838,6 +850,7 @@ saveBtn.addEventListener('click', function() {
             // Actualizar la tabla en el lado del cliente
             updateAlarmRow(alarmId, newObservation, gestionadoTime);
             row.classList.remove('selected');
+            delete localObservations[alarmId];
             console.timeEnd('Update DOM'); // Fin del tiempo para actualizar el DOM
         });
 
@@ -914,7 +927,14 @@ document.addEventListener('contextmenu', function(event) {
         contextMenu.appendChild(editButton);
 
         editButton.addEventListener('click', function() {
-            document.getElementById('editObservation').value = '';
+            const textarea = document.getElementById('editObservation');
+            let text = '';
+            selectedAlarmIds.forEach(id => {
+                if (localObservations[id] && text === '') {
+                    text = localObservations[id];
+                }
+            });
+            textarea.value = text;
             overlay.style.display = 'block';
             modal.style.display = 'block';
             contextMenu.remove(); // Elimina el menú al abrir el modal

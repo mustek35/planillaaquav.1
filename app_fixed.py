@@ -553,6 +553,14 @@ def voz_data_updater():
         socketio.sleep(sleep_interval)
 
 
+def alarms_data_updater():
+    """Tarea en segundo plano que emite alarmas periódicamente"""
+    while True:
+        alarms_data = get_alarms_data()
+        socketio.emit('alarms_update', alarms_data)
+        socketio.sleep(10)
+
+
 def get_alarm_data_for_voice():
     """Obtener alarmas recientes para la tabla de voz"""
     try:
@@ -709,5 +717,6 @@ def setup_signal_handlers():
 if __name__ == '__main__':
     setup_signal_handlers()
     socketio.start_background_task(voz_data_updater)
+    socketio.start_background_task(alarms_data_updater)
     logger.info("Iniciando aplicación completa en 127.0.0.1:5300")
     socketio.run(app, host='127.0.0.1', port=5300, debug=True)

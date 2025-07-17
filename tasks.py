@@ -5,6 +5,7 @@ Tareas asíncronas con Celery
 import logging
 import time
 from datetime import datetime
+import pytz
 from celery import Celery
 from config import Config
 from database import db_manager
@@ -28,6 +29,7 @@ def setup_celery(app):
         enable_utc=True,
         task_routes={
             'tasks.update_observation_task': {'queue': 'observations'},
+            'tasks.update_observation_in_db': {'queue': 'observations'},
             'tasks.cleanup_old_data': {'queue': 'maintenance'},
         },
         beat_schedule={
@@ -81,6 +83,61 @@ def update_observation_task(self, alarm_id, observation, observation_timestamp, 
             'alarm_id': alarm_id,
             'error': str(e)
         }
+
+@celery.task(bind=True)
+def update_observation_in_db(self, alarm_id, observation, observation_timestamp, action):
+    """Actualizar observación y calcular si se gestionó dentro de los 10 minutos."""
+    start_time = time.time()
+    try:
+        chile_tz = pytz.timezone('America/Santiago')
+
+        if isinstance(observation_timestamp, str):
+            observation_timestamp = datetime.fromisoformat(observation_timestamp)
+
+        if observation_timestamp.tzinfo is None:
+            observation_timestamp = chile_tz.localize(observation_timestamp)
+        else:
+            observation_timestamp = observation_timestamp.astimezone(chile_tz)
+
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT timestamp FROM alarmas WHERE id = %s", (alarm_id,))
+                result = cursor.fetchone()
+                detection_time = result[0] if result else None
+
+                gestionado_dentro = None
+                if detection_time:
+                    diff = (observation_timestamp - detection_time).total_seconds() / 60.0
+                    gestionado_dentro = diff <= 10
+
+                cursor.execute(
+                    """
+                    UPDATE alarmas
+                    SET observacion = %s,
+                        observation_timestamp = %s,
+                        observacion_texto = %s,
+                        accion = %s,
+                        gestionado_time = %s,
+                        gestionado_dentro_de_tiempo = %s
+                    WHERE id = %s
+                    """,
+                    (
+                        observation,
+                        observation_timestamp,
+                        observation,
+                        action,
+                        observation_timestamp,
+                        gestionado_dentro,
+                        alarm_id,
+                    ),
+                )
+                conn.commit()
+    except Exception as e:
+        logger.error(f"Error actualizando observación: {e}")
+        raise
+    finally:
+        total_time = time.time() - start_time
+        logger.warning(f"Tiempo total para update_observation_in_db: {total_time:.4f} segundos")
 
 @celery.task
 def voz_data_updater_task():

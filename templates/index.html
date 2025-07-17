@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Alarmas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/charts.css') }}">
+</head>
+<body>
+    <header class="sticky-header">
+        <div class="header-left">
+            <img src="https://orcatecnologia.cl/wp-content/uploads/2022/07/logo-orca-blanco-1.png" alt="Logo Orca" class="logo" id="logo">
+            <div class="header-title">
+                CENTRAL MONITOR
+                <div class="header-subtitle">SYSTEM (CMS)</div>
+            </div>
+        </div>
+        <div class="toolbar">
+            <input type="text" id="centerSearch" placeholder="Buscar por centro...">
+            <select id="moduleStatus">
+                <option value="online">Online (Todos los datos)</option>
+                <option value="Detección en Modulo">Dentro del Módulo</option>
+                <option value="Fuera del Módulo">Fuera del Módulo</option>
+                <option value="Zona Crítica">Zona Crítica</option>
+                <option value="Embarcación">Embarcación</option>
+                <option value="Falso-Positivo Verificar">Sin Falsos Positivos</option>
+                <option value="No Gestionado">No Gestionado</option>
+                <option value="Gestionado">Gestionado</option>
+                <option value="ticket">Ticket</option>
+            </select>
+            <label for="datePicker">Seleccionar fecha:</label>
+            <input type="date" id="datePicker">
+            <button id="soundToggle" class="sound-toggle">Sonido OFF</button>
+        </div>
+        <div class="header-right">
+            <div class="clock-container">
+                <span id="user-info">
+                    <span id="user-name">Nombre: {{ user.nombre }}</span> |
+                    <span id="user-profile">Perfil: {{ user.perfil }}</span> |
+                    <span id="user-company">Empresa: {{ user.empresa }}</span>
+                </span>
+                <span id="clock"></span>
+                <span id="countdown"></span>
+            </div>
+            <a href="{{ url_for('logout') }}" class="logout-button" title="Cerrar sesión">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+    </header>
+    <div class="container">
+        <div class="table-container main-table">
+            <table id="alarms-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Centro de Cultivo</th>
+                        <th>Duración</th>
+                        <th>En módulo</th>
+                        <th>Estado de verificación</th>
+                        <th>Observación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="right-side-container">
+            <div class="table-container alerts-table">
+                <table id="alerts-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Centro</th>
+                            <th>Multiples Alertas</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container secondary-table">
+                <table id="second-table">
+                    <thead>
+                        <tr>
+                            <th>Hora en directo</th>
+                            <th>Centro de Cultivo</th>
+                            <th>Zona</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="bar-chart" class="echart-container"></div>
+            <div id="pie-chart"></div>
+        </div>
+    </div>
+    <div class="overlay"></div>
+    <div class="modal">
+        <h2>Editar Observación</h2>
+        <textarea id="editObservation"></textarea>
+        <div class="actions">
+            <div>
+                <input type="checkbox" id="option1" name="response" value="Embarcación en el área">
+                <label for="option1">Embarcación en el área</label>
+            </div>
+            <div>
+                <input type="checkbox" id="option2" name="response" value="Trabajos en módulo">
+                <label for="option2">Trabajos en módulo</label>
+            </div>
+            <div>
+                <input type="checkbox" id="option3" name="response" value="Clima adverso en el área">
+                <label for="option3">Clima adverso en el área</label>
+            </div>
+            <button id="saveObservation">Guardar</button>
+            <button id="closeModal" class="close">Cancelar</button>
+        </div>
+        <div id="observationRecord" class="record"></div>
+    </div>
+    <div id="alarms-popup" class="popup">
+        <button class="close-button" onclick="closePopup()">Cerrar</button>
+        <div class="toolbar flex-container">
+            <input type="text" id="searchCenter" class="filter-input" placeholder="Busqueda...">
+            <button class="export-button" onclick="exportTableToExcel('popup-alarms-table', 'alarms_data.xlsx')">Excel</button>
+            <select id="timeRange">
+                <option value="night">00:00 - 07:30 (Noche)</option>
+                <option value="day">07:30 - 23:59 (Día)</option>
+                <option value="fullDay">Todo el día</option>
+            </select>
+            <label for="startTime" class="time-label">Hora de Inicio:</label>
+            <input type="time" id="startTime" class="time-input">
+            <label for="endTime" class="time-label">Hora de Fin:</label>
+            <input type="time" id="endTime" class="time-input">
+            <select id="filterStatus">
+                <option value="">Todos los estados</option>
+                <option value="Dentro del Módulo">Dentro del Módulo</option>
+                <option value="Fuera del Módulo">Fuera del Módulo</option>
+                <option value="Zona Crítica">Zona Crítica</option>
+                <option value="Embarcación">Embarcación</option>
+                <option value="No Gestionado">No Gestionado</option>
+                <option value="Gestionado">Gestionado</option>
+            </select>
+            <button id="filterButton" class="filter-button" onclick="filterTableByTimeAndStatus()">Filtrar</button>
+        </div>
+        <table id="popup-alarms-table" class="popup-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Centro</th>
+                    <th>Duración</th>
+                    <th>En Módulo</th>
+                    <th>Estados de Clasificación</th>
+                    <th>Observación</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="overlayAlerts"></div>
+    <div id="image-popup" class="popup image-popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <img id="popup-image" src="" alt="Imagen de Alarma">
+        </div>
+    </div>
+    <!-- Librerías externas -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- Tus scripts locales -->
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

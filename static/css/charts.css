@@ -1,0 +1,7 @@
+.echart-container {
+    width: 100%; /* Se adapta al ancho de su contenedor padre */
+    height: 420px; /* Altura fija */
+    margin-left: auto;
+    margin-right: auto;
+    /* No es necesario definir margin-left en 0% si queremos que sea automático y centrado */
+}

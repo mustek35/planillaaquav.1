@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos e Imágenes</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-half {
+            flex: 0 1 50%;
+            overflow-y: auto;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .bottom-half {
+            flex: 0 1 50%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            background: #e9ecef;
+        }
+
+        .video, .image {
+            flex-basis: 25%;
+            max-width: 25%;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        video, img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        table {
+            font-size: 0.8em;
+	    width: 100%;
+            border-collapse: collapse;
+        }
+	/* Clave de animación para el parpadeo */
+	@keyframes blink {
+    	0%, 100% { background-color: transparent; }
+    	50% { background-color: #84dbff; } /* Color de parpadeo, cambia según preferencia */
+	}
+
+	/* Clase para aplicar la animación */
+	.blink {
+    	animation: blink 1s step-end 3; /* Parpadea 3 veces durante 1 segundo */
+	}
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+      select {
+ 	   width: auto;
+   	   margin: 5px;
+           padding: 8px 12px;
+           border: 1px solid #ddd;
+           border-radius: 4px;
+           background-color: #fff;
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           font-size: 1rem;
+           color: #333;
+           cursor: pointer;
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+           transition: border-color 0.3s, box-shadow 0.3s;
+	}
+	/* Estilos para cuando el selector está enfocado */
+	select:focus {
+   	   border-color: #5b9bd5;
+   	   box-shadow: 0 0 8px rgba(91, 155, 213, 0.5);
+	}
+        h1, h2 {
+            margin: 0;
+            padding: 0.5em 0;
+        }
+
+        .details {
+	    text-align: center;
+   	    margin-top: 10px;
+            display: flex; /* Establece un contenedor flex */
+   	    justify-content: center; /* Centra el contenido horizontalmente */
+   	    flex-wrap: wrap; /* Permite que los elementos se ajusten según el ancho disponible */
+	}
+
+	.details p {
+    		margin: 0 10px; /* Añade un margen a los lados para separarlos un poco */
+    		white-space: nowrap; /* Evita que el texto se ajuste a una nueva línea */
+	}
+
+
+        @media (max-width: 768px) {
+            .bottom-half {
+                flex-direction: column;
+            }
+            .video, .image {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-half">
+            <h1>Alarmas</h1>
+            <table id="alarms-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Centro</th>
+                        <th>Duración</th>
+                        <th>En módulo</th>
+                        <th>Estado de verificación</th>
+                        <th>Observación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Las alarmas se cargarán aquí mediante WebSocket -->
+                </tbody>
+            </table>
+        </div>
+        <div class="bottom-half">
+            <div class="video">
+                <h2>Videos</h2>
+                <select id="video-selector"></select>
+                <video controls id="video-player"></video>
+            </div>
+            <div class="image">
+                <h2>Última Imagen</h2>
+                <select id="image-selector"></select>
+                <img id="latest-image" alt="Última Imagen">
+                <div class="details">
+                    <p id="image-date">Fecha: </p>
+                    <p id="image-time">Hora: </p>
+                    <p id="image-center">Centro: </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initImageList();
+    initVideoList();
+    initSocketConnection();
+});
+   
+function initSocketConnection() {
+    var socket = io.connect(`http://${document.domain}:${location.port}`);
+    socket.on('connect', function() {
+        console.log('WebSocket connected!');
+        socket.emit('request_alarms_update');
+       
+});
+    socket.on('alarms_update', function(alarmsData) {
+        updateAlarmsTable(alarmsData);
+    });
+}
+
+function updateAlarmsTable(alarmsData) {
+    const tableBody = document.getElementById('alarms-table').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+    alarmsData.forEach(alarm => {
+        const row = tableBody.insertRow();
+        row.innerHTML = `<td>${alarm.fecha}</td><td>${alarm.hora}</td><td>${alarm.centro}</td><td>${alarm.duración}</td><td>${alarm.en_modulo}</td><td>${alarm.estado_verificacion}</td><td>${alarm.observacion}</td>`;
+    });
+}
+
+    // Inicializa la lista de imágenes
+    function initImageList() {
+        fetch('/get-image-list')
+            .then(response => response.json())
+            .then(images => {
+                const imageSelector = document.getElementById('image-selector');
+                images.forEach(image => {
+                    let option = new Option(`Imagen del ${image.fecha} ${image.hora}`, image.id);
+                    imageSelector.add(option);
+                });
+                imageSelector.addEventListener('change', (event) => {
+                    const imageId = event.target.value;
+                    loadSelectedImage(imageId);
+                });
+                imageSelector.dispatchEvent(new Event('change')); // Carga inicial de la imagen
+            });
+        }
+    // Inicializa la lista de videos
+    function initVideoList() {
+        fetch('/video-list')
+            .then(response => response.json())
+            .then(videos => {
+                const videoSelector = document.getElementById('video-selector');
+                videos.forEach(videoUrl => {
+                    let option = new Option(videoUrl, videoUrl);
+                    videoSelector.add(option);
+                });
+                videoSelector.addEventListener('change', (event) => {
+                    const videoUrl = event.target.value;
+                    loadVideoAndClosestImage(videoUrl);
+                });
+                videoSelector.dispatchEvent(new Event('change')); // Carga inicial del video
+            });
+        }
+function loadSelectedImage(imageId) {
+    fetch(`/get-image-details/${imageId}`)
+        .then(response => response.json())
+        .then(data => {
+            const latestImage = document.getElementById('latest-image');
+            latestImage.src = 'data:image/jpeg;base64,' + data.imagen_base64;
+            document.getElementById('image-date').textContent = 'Fecha: ' + (data.fecha || '');
+            document.getElementById('image-time').textContent = 'Hora: ' + (data.hora || '');
+            document.getElementById('image-center').textContent = 'Centro: ' + (data.centro || '');
+        })
+        .catch(error => console.error('Error al cargar la imagen:', error));
+    }
+
+
+
+function loadVideoAndClosestImage(videoUrl) {
+const videoPlayer = document.getElementById('video-player');
+videoPlayer.src = videoUrl;
+videoPlayer.load();
+
+const videoName = videoUrl.split('/').pop();
+const videoDateTimeParts = videoName.split('_').slice(1, 3);
+const dateParts = videoDateTimeParts[0].split('-');
+const timeParts = videoDateTimeParts[1].split('-').map(part => part.split('.')[0]); // Eliminando la extensión del archivo si existe
+// Asegúrate de utilizar el formato '%d-%m-%Y_%H-%M-%S' aquí
+const formattedDateTime = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}_${timeParts.join('-')}`;
+
+fetch(`/get-closest-image/${formattedDateTime}`)
+    .then(response => response.json())
+    .then(data => {
+        const latestImage = document.getElementById('latest-image');
+        latestImage.src = 'data:image/jpeg;base64,' + data.imagen_base64;
+        document.getElementById('image-date').textContent = `Fecha: ${data.fecha}`;
+        document.getElementById('image-time').textContent = `Hora: ${data.hora}`;
+        document.getElementById('image-center').textContent = `Centro: ${data.centro}`;
+    })
+    .catch(error => console.error('Error al cargar la imagen más cercana:', error));
+}
+function updateAlarmsTable(alarmsData) {
+    const tableBody = document.getElementById('alarms-table').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+    alarmsData.forEach(alarm => {
+        const row = tableBody.insertRow();
+        row.innerHTML = `<td>${alarm.fecha}</td><td>${alarm.hora}</td><td>${alarm.centro}</td><td>${alarm.duración}</td><td>${alarm.en_modulo}</td><td>${alarm.estado_verificacion}</td><td>${alarm.observacion}</td>`;
+    });
+}
+</script>
+</body>
+</html>

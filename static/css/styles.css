@@ -1,0 +1,805 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Reset básico y configuración de fuente */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    background-color: #0A192F; /* Fondo azul oscuro */
+    color: #FFFFFF;
+    font-size: 12px;
+}
+.clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    white-space: nowrap; /* Asegura que el contenido no se envuelva */
+} 
+
+.container {
+    display: flex; /* Usa flexbox para el contenedor principal */
+    flex-wrap: nowrap; /* Evita que los elementos se envuelvan */
+    justify-content: space-between; /* Espacia los elementos uniformemente */
+    flex-direction: column; /* Coloca los elementos en una columna */
+    align-items: flex-start; /* Alinea los elementos al inicio de la columna */
+    gap: 10px; /* Establece un espacio entre los elementos */
+    margin: 20px;
+    height: calc(100vh - 100px); /* Altura total de la vista menos el margen */
+}
+
+/* Estilización de botones */
+button {
+    background-color: #538BD0; /* Azul botón */
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+/* Especificaciones para la columna Observación */
+table th:nth-child(7), table td:nth-child(7) {
+    min-width: 310px; /* Asigna un mínimo más ancho */
+    max-width: 300px; /* Permite que se expanda más si hay espacio */
+}
+button:hover {
+    background-color: #1D2C45; /* Azul botón hover */
+}
+
+/* Estilización de los inputs y selects */
+input[type="text"], select, input[type="date"] {
+    border: 1px solid #538BD0;
+    background: #538BD0; /* Fondo para inputs */
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+/* Estilización de las tablas */
+.table-container {
+    flex: none; /* Ajusta para permitir un poco de espacio entre las tablas */
+    background: #275280; /* Fondo de la tabla */
+    border-radius: 10px;
+    overflow: auto; /* Para mantener el radio del borde en tablas desbordadas */
+    padding: 10px; /* Añade algo de padding para no tocar los bordes */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Opcional: añade sombra para efecto elevado */
+    max-height: fit-content; /* Ajusta la altura al contenido */
+}
+
+/* Estilización de la cabecera de la tabla */
+table thead th {
+    background-color: #538BD0; /* Fondo de encabezado */
+    color: #fff;
+    padding: 4px 10px;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center; /* Centrar texto en la cabecera */
+}
+/* Puedes ajustar los min-width aquí para la fecha y hora si es necesario */
+table th:nth-child(1),
+table th:nth-child(2) {
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 70px; /* Ajustar a un ancho mínimo más pequeño si es necesario */
+}
+/* Estilización de las tablas */
+/* Si también quieres que las celdas de la columna Observación tengan más espacio, puedes hacerlo así: */
+table td:nth-child(6) {
+    min-width: 100px;
+    max-width: 100px;
+    overflow: hidden; /* Añade esto si quieres ocultar el contenido que desborde */
+    text-overflow: ellipsis; /* Añade esto si quieres que aparezcan puntos suspensivos cuando el contenido desborde */
+    white-space: nowrap; /* Añade esto para evitar que el contenido se envuelva a la siguiente línea */
+}
+
+table {
+    width: 100%; /* Hacer que la tabla ocupe todo el ancho del contenedor */
+    table-layout: fixed; /* Cambiar el layout a fixed para permitir anchos de columna específicos */
+}
+
+
+/* Estilización de las cabeceras de las tablas */
+table th:nth-child(1), table th:nth-child(2) {
+    min-width: 70px;
+}
+
+table th:not(:nth-child(6)) {
+    width: 137px;
+}
+
+/* Estilización de la columna de observaciones para que ocupe el espacio disponible */
+table th:last-child {
+    width: 100px;
+}
+
+/* Reducción del padding dentro de las celdas para maximizar el espacio */
+table th, table td {
+    text-align: center; /* Centrar horizontalmente */
+    vertical-align: middle; /* Centrar verticalmente */
+    padding: 8px; /* Ajuste el padding si es necesario */
+}
+/* Estilización de la cabecera de las columnas Centro, Duración y Estado de Verificación */
+table th:nth-child(3),
+table th:nth-child(4),
+table th:nth-child(5) {
+    min-width: 120px; /* Ajustar a un ancho mínimo más pequeño si es necesario */
+}
+
+/* Estilización general de las celdas */
+table td {
+    color: #fff;
+    padding: 10px;
+    border-top: 1px solid #6d9ff5;
+}
+
+tbody tr td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Estilos para la fila seleccionada y el hover */
+tr.selected {
+    background-color: #233554;
+    color: white;
+}
+
+tbody tr:hover {
+    background-color: #1D2C45;
+}
+
+/* Estilos para el modal */
+.modal {
+    width: 50%; /* Ajusta al tamaño deseado */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #112240; /* Fondo del modal */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+    z-index: 1002;
+    display: none; /* Inicialmente oculto */
+}
+#editObservation {
+    width: 100%; /* Ocupa todo el ancho del contenedor modal */
+    height: 200px; /* Ajusta la altura según tus necesidades */
+    padding: 10px; /* Añade un poco de padding para que el texto no esté pegado al borde */
+    box-sizing: border-box; /* Incluye el padding y border en el ancho y alto total */
+    margin-top: 10px; /* Espacio entre el select y el textarea */
+    border: 1px solid #ccc; /* Un borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    font-size: 12px;
+}
+
+#editObservation:focus {
+    font-size: 12px; /* Tamaño de fuente más grande cuando el área de texto está enfocada */
+}
+.actions {
+    display: flex; /* Activa flexbox */
+    justify-content: space-between; /* Espacia los elementos uniformemente */
+    align-items: center; /* Alinea verticalmente los elementos */
+    padding: 10px 0; /* Añade un poco de padding vertical */
+}
+
+#predefinedResponses {
+    margin-right: 10px; /* Espacio entre el selector y los botones */
+}
+
+/* Estilos para el overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); /* Oscurecimiento del fondo */
+    z-index: 1001; /* Debajo del modal, encima del contenido */
+    display: none; /* Inicialmente oculto */
+}
+/* Estilos para el header */
+.sticky-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay suficiente espacio */
+    gap: 10px; /* Agrega un poco de espacio entre los elementos */
+    padding: 0px; /* Agrega padding para no pegar el contenido a los bordes */
+    z-index: 1000;
+    background-color: #084A9A;
+    border-radius: 10px; /* Esto redondeará las esquinas del header */
+    margin: 20px; /* Añade márgenes alrededor del header si es necesario para evitar que toque los bordes de la ventana */
+    margin-right: 20px;
+}
+/* Estilo para filas gestionadas */
+.gestionado-row {
+    background-color: #0A192F;
+    color: white; /* Cambia el color del texto para que sea visible sobre el fondo oscuro */
+    border: 2px solid white; /* Añade un borde blanco de 2px */
+    border-radius: 5px; /* Redondea los bordes con un radio de 5px */
+    padding: 10px; /* Añade un poco de espacio dentro del borde para que el contenido no esté pegado al borde */
+}
+.time-icon {
+    width: 28px; /* Puedes ajustar el tamaño según tus necesidades */
+    height: 28px;
+    vertical-align: middle; /* Alinea el ícono verticalmente en el medio de la celda */
+}
+.time-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+.time-icon-container .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Posiciona el tooltip arriba del icono */
+    left: 50%;
+    margin-left: -100px; /* Usar la mitad del width para centrar */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.time-icon-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Estilo para la hora gestionada */
+.gestionado-time {
+    color: white;
+    font-weight: bold;
+}
+.gestionado {
+    color: #00FF00; /* Verde eléctrico */
+    font-size: 10px; /* Tamaño de fuente más pequeño */
+    font-weight: normal; /* Asegura que el texto no esté en negrita */
+    text-shadow: -1px -1px 0 #00008B, 1px -1px 0 #00008B, -1px 1px 0 #00008B, 1px 1px 0 #00008B; /* Borde azul oscuro alrededor del texto */
+}
+
+.checkmark {
+    color: #00FF00; /* Verde eléctrico */
+    font-size: 12px; /* Tamaño del checkmark */
+    margin-left: 5px; /* Espacio a la izquierda del texto "(Gestionado)" */
+}
+
+/* Estilos para la barra de progreso */
+.progress-container {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 8px; /* Bordes redondeados */
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 0;
+    height: 30px;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    border-radius: 8px; /* Bordes redondeados */
+    transition: width 0.4s; /* Transición suave */
+}
+
+/* Estilos para el logo */
+.logo {
+    width: 90px; /* Ajusta el tamaño del logo según sea necesario */
+    margin-right: 20px; /* Espacio entre el logo y el título */
+    margin-left: 20px; /* Ajusta este valor según sea necesario */
+    transition: transform 0.3s ease; /* Suaviza la transición */
+    cursor: pointer; /* Cambia el cursor a una mano */
+}
+.logo:hover {
+    transform: scale(1.1); /* Aumenta el tamaño del logo al pasar el cursor */
+}
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.header-title {
+    font-size: 15px; /* Ajuste el tamaño de la fuente del título principal */
+    color: #FFFFFF; /* Color del texto */
+    font-weight: bold; /* Negrita para destacar */
+    white-space: nowrap; /* Asegura que el título no se divida en líneas */
+    overflow: visible; /* Oculta cualquier desbordamiento de texto */
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+}
+
+.header-subtitle {
+    font-size: 12px; /* Tamaño más pequeño para el subtítulo */
+    color: #FFFFFF; /* Color del texto */
+    font-weight: bold; /* Peso normal para diferenciar del título */
+    white-space: nowrap; /* Evita que el subtítulo se divida en líneas */
+    overflow: hidden; /* Maneja el desbordamiento de texto */
+    text-overflow: ellipsis; /* Puntos suspensivos si el texto es demasiado largo */
+}
+/* Nuevo contenedor para fecha y tiempo restante */
+.header-time {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end; /* Alinea el texto a la derecha */
+}
+
+.toolbar, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Ajusta el espacio entre los elementos si es necesario */
+    flex-grow: 0; 
+}
+
+/* Contenedor del lado derecho que contendrá las tablas y el gráfico */
+.right-side-container {
+    display: flex; /* Usa flexbox para estructurar el contenido */
+    flex-direction: row; /* Organiza los elementos en una fila */
+    gap: 10px; /* Establece un espacio entre los elementos internos */
+    height: auto; /* Permite que el contenedor se ajuste al contenido */
+    overflow: auto; /* Permite el desplazamiento si el contenido excede la altura */
+    width: calc(100% - 10px); /* Ajusta el ancho para que ocupe la mitad del espacio disponible, menos el gap */
+}
+
+/* Contenedores de las tablas: asegúrate de que no crezcan más allá de su contenido */
+.alerts-table, .secondary-table {
+    flex: none; /* No permitir que las tablas crezcan */
+    background: #084A9A; /* Estilo de fondo de la tabla */
+    border-radius: 10px; /* Estilo de borde redondeado */
+    padding: 10px; /* Espaciado interno */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra para efecto de profundidad */
+    height: 400px; /* Altura fija para las tablas */
+    width: calc(32% - 0px);
+    overflow: auto; /* Desplazamiento si es necesario */
+}
+.secondary-table {
+    width: calc(28% - 0px); /* Ancho más estrecho para la tabla secundaria */
+}
+
+/* Agrega media query si es necesario para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .right-side-container {
+        height: auto; /* Permite que el contenedor crezca según el contenido en pantallas pequeñas */
+    }
+
+    .echarts-container {
+        height: 400px; /* Altura fija para el gráfico en pantallas pequeñas */
+    }
+}
+
+/* Ajusta el ancho de las columnas para la tabla de alarmas */
+#alarms-table th:nth-child(1), #alarms-table td:nth-child(1) { width: 8%; }
+#alarms-table th:nth-child(2), #alarms-table td:nth-child(2) { width: 10%; }
+#alarms-table th:nth-child(3), #alarms-table td:nth-child(3) { width: 20%; }
+#alarms-table th:nth-child(4), #alarms-table td:nth-child(4) { width: 10%; }
+#alarms-table th:nth-child(5), #alarms-table td:nth-child(5) { width: 12%; }
+#alarms-table th:nth-child(6), #alarms-table td:nth-child(6) { width: 16%; }
+#alarms-table th:nth-child(7), #alarms-table td:nth-child(7) { width: 24%; }
+
+/* Ajusta el ancho de las columnas para la tabla de alertas */
+#alerts-table th:nth-child(1), #alerts-table td:nth-child(1) { width: 110%; }
+#alerts-table th:nth-child(2), #alerts-table td:nth-child(2) { width: 90%; }
+#alerts-table th:nth-child(3), #alerts-table td:nth-child(3) { width: 130%; }
+#alerts-table th:nth-child(4), #alerts-table td:nth-child(4) { width: 250%; }
+#alerts-table th:nth-child(5), #alerts-table td:nth-child(5) { width: 60%; }
+/* Aplica estilos a la tercera columna */
+#alerts-table th:nth-child(3) {
+    font-weight: normal; /* Primera fila normal */
+}
+
+#alerts-table td:nth-child(3) {
+    font-weight: bold;
+    font-size: 12px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 0.5px; /* Ajusta el espaciado según tus necesidades */
+}
+
+/* Aplica estilos a la tercera columna desde la segunda fila hacia adelante */
+#alerts-table tr:nth-child(n+2) td:nth-child(3) {
+    font-weight: bold;
+    font-size: 12px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 0.5px; /* Ajusta el espaciado según tus necesidades */
+}
+/* Aplica estilos a la tercera columna */
+#alarms-table th:nth-child(3) {
+    font-weight: normal; /* Primera fila normal */
+}
+
+#alarms-table td:nth-child(3) {
+    font-weight: bold;
+    font-size: 16px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 1.8px; /* Ajusta el espaciado según tus necesidades */
+}
+
+/* Aplica estilos a la tercera columna desde la segunda fila hacia adelante */
+#alarms-table tr:not(:first-child) td:nth-child(3) {
+    font-weight: bold;
+    font-size: 16px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 1.8px; /* Ajusta el espaciado según tus necesidades */
+}
+/* Ajusta el ancho de las columnas para la tabla secundaria */
+#second-table th:nth-child(1), #second-table td:nth-child(1) { width: 20.33%; }
+#second-table th:nth-child(2), #second-table td:nth-child(2) { width: 30.33%; }
+#second-table th:nth-child(3), #second-table td:nth-child(3) { width: 20.33%; }
+
+/* Aplica estilos a la primera fila de la segunda columna */
+#second-table tr:nth-child(1) td:nth-child(2) {
+    font-weight: bold;
+    font-size: 22px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 0.5px; /* Ajusta el espaciado según tus necesidades */
+}
+/* Aplica estilos a la primera fila de la segunda columna */
+#second-table tr:nth-child(1) td:nth-child(3) {
+    font-weight: bold;
+    font-size: 22px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 0.5px; /* Ajusta el espaciado según tus necesidades */
+}
+/* Aplica estilos a la primera fila de la segunda columna */
+#second-table tr:nth-child(1) td:nth-child(1) {
+    font-weight: bold;
+    font-size: 22px; /* Ajusta el tamaño según tus necesidades */
+    letter-spacing: 0.5px; /* Ajusta el espaciado según tus necesidades */
+}
+.main-table {
+    flex: 1; /* Ocupa la mitad del espacio disponible en términos de ancho */
+    background: #084A9A;; /* Fondo de la tabla */
+    border-radius: 10px;
+    overflow: auto; /* Agrega desplazamiento si es necesario */
+    padding: 10px;
+    margin-top: -10px; /* Reduce el valor según sea necesario */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: 900px; /* Altura fija para la tabla principal */
+}
+/* Estiliza solo el scrollbar visible */
+::-webkit-scrollbar {
+    width: 12px; /* Ancho del scrollbar */
+}
+
+/* Estiliza la barra de desplazamiento (track) */
+::-webkit-scrollbar-track {
+    background: #0A192F; /* Cambia al color de fondo de la tabla */
+}
+
+/* Estiliza la parte móvil (thumb) */
+::-webkit-scrollbar-thumb {
+    background-color: #275280; /* Cambia al color de la tabla para que se fusione */
+    border-radius: 10px; /* Bordes redondeados */
+    border: 3px solid #0A192F; /* Borde del mismo color que el fondo para simular invisibilidad */
+}
+/* Estiliza el scrollbar para Firefox */
+html {
+    scrollbar-color: #275280 #0A192F; /* barra y fondo */
+}
+/* Estilos para el botón de encendido/apagado */
+.sound-toggle {
+    border: 1px solid #526e9d; /* Añade un borde */
+    background-color: #526e9d; /* Color de fondo por defecto */
+  }
+  
+  /* Estilos para cuando el sonido está encendido */
+  .sound-toggle-on {
+    background-color: #28a745; /* Verde para el estado "encendido" */
+  }
+  
+  /* Estilos para cuando el sonido está apagado */
+  .sound-toggle-off {
+    background-color: #dc3545; /* Rojo para el estado "apagado" */
+  }
+  .user-info {
+    display: flex;
+    flex-direction: column; /* O 'row' si prefieres que esté en línea */
+    align-items: flex-start;
+    padding: 10px;
+    color: #fff; /* Ajusta el color según tu diseño */
+}
+/* Estilos para el botón de cierre de sesión */
+.logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 87px; /* Ajusta según tu layout */
+    padding: 5px 10px;
+    color: #FFFFFF; /* Ajusta el color de texto como prefieras */
+    font-size: 14px; /* Ajusta el tamaño del texto como prefieras */
+    text-decoration: none; /* Quita el subrayado del enlace */
+    cursor: pointer;
+}
+
+.logout-button i {
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+.icon-spacing {
+    margin-right: 10px; /* ajusta según tus necesidades */
+    vertical-align: middle; /* para alinear verticalmente el icono con el texto */
+}
+
+.fa-user.icon-det-modulo { /* Detección en Módulo */
+    color: rgb(255, 255, 255);
+}
+
+.fa-question-circle.icon-verificar { /* Verificar */
+    color:yellow;
+}
+
+.fa-exclamation-triangle.icon-falso-positivo { /* Falso-Positivo */
+    color: yellow;
+}
+
+.fa-exclamation-triangle.icon-zona-critica {
+    color: red;
+    margin-right: 10px; /* Ajusta el valor de acuerdo a tus necesidades */
+}
+
+@keyframes swayIcon {
+    0% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-10px) rotate(-5deg); }
+    50% { transform: translateX(0) rotate(0); }
+    75% { transform: translateX(10px) rotate(5deg); }
+    100% { transform: translateX(0) rotate(0); }
+}
+.icon-embarcacion {
+    width: 45px; /* ajusta según tus necesidades */
+    height: 45px; /* ajusta según tus necesidades */
+    animation: swayIcon 2s infinite;
+}
+
+.icon-zona-critica {
+    color: red; /* Icono en rojo para alertas críticas */
+}
+
+.icon-clima-adverso-wind {
+    color: skyblue; /* Icono de viento en celeste */
+}
+
+.icon-clima-adverso-rain {
+    color: white; /* Icono de lluvia en blanco */
+    margin-right: 10px; /* Ajusta el valor de acuerdo a tus necesidades */
+}
+.icon-area-multiple {
+    color: yellow; /* Icono para múltiples alertas en área, en amarillo */
+    margin-right: 10px; /* Ajusta el valor de acuerdo a tus necesidades */
+}
+.icon-modulo-multiple {
+    color: red; /* Icono para múltiples alertas en módulo, en rojo */
+    margin-right: 10px; /* Ajusta el valor de acuerdo a tus necesidades */
+}
+/* Aumenta el tamaño de todos los iconos de Font Awesome */
+.fa-lg { /* Esta es la clase que Font Awesome utiliza para los iconos más grandes */
+    font-size: 1.8em; /* Ajusta este valor según prefieras */
+}
+
+/* O si quieres aumentar el tamaño de todos los iconos de Font Awesome, no solo los .fa-lg */
+.fa,
+.fas {
+    font-size: 1.8em; /* O cualquier tamaño que prefieras */
+}
+/* Estilos básicos para el popup */
+#alarms-popup {
+    width: 100%; /* Ajusta esto según el tamaño de tu tabla */
+    max-width: 1200px; /* Ajusta esto según tus necesidades */
+    overflow: auto; /* Permite el desplazamiento si la tabla es muy grande */
+    border-radius: 15px; /* Bordes más redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agrega sombra para suavizar los contornos */
+}
+
+/* Estilos generales para todos los popups */
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    background-color: #0A192F;
+    padding: 20px;
+    border-radius: 15px; /* Bordes más redondeados */
+}
+/* Estilos específicos para el popup de imagen */
+.image-popup {
+    width: 630px; /* Ajusta el ancho según tus necesidades */
+    height: 385px; /* Ajusta la altura según tus necesidades */
+    right: 37px; /* Ajusta la posición desde la derecha */
+    bottom: 18px; /* Ajusta la posición desde la parte inferior */
+    transform: none; /* Elimina la transformación para centrar */
+    left: auto; /* Anula el valor 'left' para evitar conflictos */
+    top: auto; /* Anula el valor 'top' para evitar conflictos */
+    border: none; /* Elimina el borde */
+    padding: 0; /* Ajusta el padding si es necesario */
+    border-radius: 5px; /* Hace los contornos más suaves */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agrega sombra para suavizar los contornos */
+}
+
+.image-popup .popup-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.image-popup .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.image-popup #popup-image {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: auto;
+    border-radius: 8px; /* Hace los contornos de la imagen más suaves */
+}
+
+
+#alarms-popup table {
+    width: 100%; /* La tabla ocupa todo el ancho del popup */
+    border-collapse: initial; /* Los bordes de las celdas se colapsan en uno solo */
+}
+
+#alarms-popup thead {
+    display: table; /* Permite que thead se mantenga en la parte superior */
+    width: calc(100% - 0px); /* Ajusta el ancho para compensar el desplazamiento */
+}
+
+#alarms-popup tbody {
+    display: block;
+    max-height: 70vh; /* Altura máxima para el cuerpo de la tabla */
+    overflow-y: auto; /* Permite desplazamiento vertical dentro de tbody */
+}
+
+#alarms-popup th, #alarms-popup td {
+    border: 1px solid #ffffff00; /* Bordes blancos */
+    padding: 8px; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+}
+
+#alarms-popup th:nth-child(1), #alarms-popup td:nth-child(1) { width: 11%; } /* Ejemplo de ancho para la primera columna */
+#alarms-popup th:nth-child(2), #alarms-popup td:nth-child(2) { width: 10%; } /* Segunda columna */
+#alarms-popup th:nth-child(3), #alarms-popup td:nth-child(3) { width: 10%; } /* Tercera columna */
+#alarms-popup th:nth-child(4), #alarms-popup td:nth-child(4) { width: 15%; } /* Cuarta columna */
+#alarms-popup th:nth-child(5), #alarms-popup td:nth-child(5) { width: 19%; } /* Quinta columna */
+#alarms-popup th:nth-child(6), #alarms-popup td:nth-child(6) { width: 39%; } /* Sexta columna */
+
+#alarms-popup button {
+    background-color: #ffffff; /* Botones con fondo blanco */
+    color: rgb(0, 0, 0); /* Texto del botón en negro */
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px; /* Bordes más redondeados */
+    cursor: pointer;
+    margin-top: 15px; /* Espacio encima del botón */
+}
+#alarms-popup .close-button {
+    background-color: #275280; /* Rojo para el botón de cerrar */
+    color: white; /* Texto en blanco */
+    border: none;
+    border-radius: 30%; /* Botón redondeado */
+    cursor: pointer; /* Manito al pasar */
+    padding: 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.context-menu {
+    position: absolute;
+    background-color: #0A192F; /* Color de fondo azul */
+    color: #ffffff; /* Color de texto blanco */
+    border: 1px solid #275280; /* Borde azul */
+    border-radius: 8px; /* Bordes más redondeados */
+    padding: 2px; /* Aumenta el padding para que el botón sobresalga más */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    transition: font-size 0.2s; /* Suaviza la transición de tamaño de fuente */
+    font-size: 12px; /* Tamaño de fuente inicial */
+    cursor: pointer; /* Cambia el cursor a una manito cuando el mouse pasa por encima */
+    z-index: 1000;
+}
+
+.context-menu:hover {
+    font-size: 14px; /* Aumenta el tamaño de la fuente al pasar el ratón */
+}
+.selected {
+    font-size: 15px; /* Aumenta el tamaño de la fuente para hacerla más notoria */
+    background-color: #f2f2f2; /* Opcional: un cambio de color de fondo para destacar aún más */
+}
+.menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: #275280; /* Color de fondo inicial */
+    border-radius: 4px;
+    margin: 2px 0;
+    transition: background-color 0.3s; /* Transición suave para el cambio de color */
+}
+
+.menu-item:hover {
+    background-color: #e0e0e0; /* Color de fondo al pasar el mouse */
+}
+
+.icon-image {
+    cursor: pointer; /* Cambia el cursor a una mano */
+}
+/* Flex container for aligning elements in a single line */
+.flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Cambiado a flex-start para alinearlos a la izquierda */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben en una línea */
+    margin-bottom: 10px;
+}
+
+.flex-container > * {
+    margin: 5px; /* Espacio entre todos los elementos dentro del contenedor flex */
+}
+
+.flex-container .filter-input,
+.flex-container .time-input,
+.flex-container .filter-button,
+.flex-container .export-button,
+.flex-container .time-label {
+    margin-right: 10px; /* Espacio entre los elementos */
+}
+
+/* Aumentar el tamaño de los campos de hora */
+.flex-container .time-input {
+    width: 120px; /* Ajusta el ancho según sea necesario */
+    height: 35px; /* Ajusta la altura según sea necesario */
+    padding: 8px; /* Ajusta el padding según sea necesario */
+    margin-right: 10px; /* Mantén el margen derecho */
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000; /* Texto negro */
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+/* Ajustar el estilo de los botones */
+.flex-container button {
+    width: auto;
+    height: 35px; /* Ajusta la altura según sea necesario */
+    padding: 8px 12px; /* Ajusta el padding según sea necesario */
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000; /* Texto negro */
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+}
+table {
+    border-collapse: separate;
+    border-spacing: 0 5px; /* Añadir espacio entre filas */
+}
+
+table tbody tr {
+    border-radius: 10px; /* Bordes redondeados */
+    overflow: hidden; /* Para asegurar que el contenido respete los bordes redondeados */
+}
+
+.connected {
+    background-color: #006317; /* Verde claro */
+    color: #155724; /* Texto verde oscuro */
+    border: 2px solid #006317; /* Borde verde */
+}
+
+.disconnected {
+    background-color: #ff0015; /* Rojo claro */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 2px solid #fd0019; /* Borde rojo */
+}
+
+.link-icon {
+    margin-left: 5px; /* Espacio entre el texto y el icono */
+}

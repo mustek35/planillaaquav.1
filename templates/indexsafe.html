@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reproductor de Videos</title>
+</head>
+<body>
+    <h1>Selecciona un video</h1>
+    <select id="videoSelector" onchange="updateVideoPlayer()">
+        <!-- Las opciones se llenarán dinámicamente con JavaScript -->
+    </select>
+
+    <video id="videoPlayer" controls width="480">
+        Tu navegador no soporta el elemento <code>video</code>.
+    </video>
+
+    <script>
+        const videos = {{ video_urls | tojson }};
+        const videoSelector = document.getElementById('videoSelector');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        function populateVideoSelector() {
+            videos.forEach(video => {
+                const option = new Option(video.split('/').pop(), video);
+                videoSelector.add(option);
+            });
+        }
+
+        function updateVideoPlayer() {
+            const selectedVideo = videoSelector.value;
+            videoPlayer.src = selectedVideo;
+            videoPlayer.load();
+            videoPlayer.play();
+        }
+
+        // Llenar el selector con los videos al cargar la página
+        window.onload = populateVideoSelector;
+    </script>
+</body>
+</html>
+

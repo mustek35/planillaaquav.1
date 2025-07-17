@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Videos e Imágenes</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .video, .image {
+            flex-basis: 48%; /* Ajusta el porcentaje para el tamaño que prefieras */
+        }
+        .image img {
+            width: 100%; /* Hace que la imagen sea responsiva */
+            height: auto;
+        }
+        .details {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="image">
+        <h1>Última Imagen</h1>
+        <img src="data:image/jpeg;base64,{{ image_base64 }}" alt="Última Imagen">
+        <div class="details">
+            <p>Fecha: {{ image_details.fecha }}</p>
+            <p>Hora: {{ image_details.hora }}</p>
+            <p>Centro: {{ image_details.centro }}</p>
+        </div>
+    </div>
+    
+    <div class="video">
+        <h1>Videos</h1>
+        <select id="video-selector" onchange="loadVideo(this.value)">
+            {% for video_url in video_urls %}
+            <option value="{{ video_url }}">{{ video_url.split('/')[-1] }}</option>
+            {% endfor %}
+        </select>
+        <div id="video-container">
+            <!-- El video se cargará aquí -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadVideo(videoUrl) {
+        const videoContainer = document.getElementById('video-container');
+        videoContainer.innerHTML = `
+            <video width="100%" controls>
+                <source src="${videoUrl}" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+        `;
+    }
+    // Carga el primer video por defecto
+    if(document.getElementById('video-selector').options.length > 0) {
+        loadVideo(document.getElementById('video-selector').value);
+    }
+</script>
+
+</body>
+</html>
+

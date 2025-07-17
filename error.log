@@ -1,0 +1,562 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:37] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:41] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:42] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:43] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:43] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+ERROR:app:Error retrieving processed image: no existe la relación «cermaq_imagenes»
+LINE 3:             FROM cermaq_imagenes
+                         ^
+
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:45] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:48] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:50] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:51] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:52] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:53] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:54] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 16:56:55] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:06:11] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:06:31] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:07:27] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:08:06] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:33] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:37] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:38] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: None, center: None
+DEBUG:app:No image found
+DEBUG:app:No image found for date: None, center: None
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:49] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: None, center: None
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: None, center: None
+DEBUG:app:No image found
+DEBUG:app:No image found for date: None, center: None
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:51] "[33mGET /get_processed_image HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:09:54] "[33mGET / HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:10:33] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:11:05] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:11:06] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:11:07] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:No image found for date: 2024-07-11, center: Acopio
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:11:08] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:12:52] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Exception on /get_processed_image [GET]
+Traceback (most recent call last):
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "app.py", line 66, in get_processed_image
+    with open('/mnt/data/temp_image.png', 'wb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:14:01] "[35m[1mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 500 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Exception on /get_processed_image [GET]
+Traceback (most recent call last):
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "app.py", line 66, in get_processed_image
+    with open('/mnt/data/temp_image.png', 'wb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:14:03] "[35m[1mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 500 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Exception on /get_processed_image [GET]
+Traceback (most recent call last):
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/estadoscam/mi_flask_env/lib/python3.8/site-packages/flask/app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "app.py", line 66, in get_processed_image
+    with open('/mnt/data/temp_image.png', 'wb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:14:35] "[35m[1mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 500 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Error saving image data to file: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:15:29] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Error saving image data to file: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+ERROR:app:Error inspecting image file: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:17:05] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+ERROR:app:Error saving image data to file: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+ERROR:app:Error inspecting image file: [Errno 2] No such file or directory: '/mnt/data/temp_image.png'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:17:57] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:20:51] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:22:12] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:22:27] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:22:29] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:25:01] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:25:04] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:25:25] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:25:28] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:25:30] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 17:26:47] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:01:07] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:01:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:06:40] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:06:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:09] "[33mGET / HTTP/1.1[0m" 404 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:15] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:16] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:17] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:17] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+DEBUG:app:Fetching image for date: 2024-07-11, center: Acopio
+DEBUG:app:Executing query: 
+            SELECT imagen_procesada
+            FROM public.cermaq_imagenes
+            WHERE timestamp::date = %s AND centro = %s AND imagen_procesada IS NOT NULL
+            ORDER BY timestamp DESC
+            LIMIT 1
+             with date: 2024-07-11, center: Acopio
+DEBUG:app:Image found
+DEBUG:app:Image data saved to /mnt/data/temp_image.png for inspection
+DEBUG:app:First 100 bytes of /mnt/data/temp_image.png: b'/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0d'
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:07:18] "GET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:09:11] "[33mGET /get_processed_image?date=2024-07-11&center=Acopio HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:09:19] "GET /files HTTP/1.1" 200 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:09:22] "GET /files/temp_image.png HTTP/1.1" 200 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:09:30] "[36mGET /files/temp_image.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://10.11.10.26:5650
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:12:01] "[33mGET / HTTP/1.1[0m" 404 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:12:09] "GET /files HTTP/1.1" 200 -
+INFO:werkzeug:194.100.10.62 - - [11/Jul/2024 19:12:22] "GET /download_image_data?date=2024-07-11&center=Acopio HTTP/1.1" 200 -

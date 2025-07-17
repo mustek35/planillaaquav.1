@@ -1007,21 +1007,6 @@ function updateClockAndCountdown() {
 }
 
 
-    // Actualizar el reloj con la fecha y hora actual
-    const currentDateTime = getCurrentDateTime();
-    clockElement.textContent = currentDateTime;
-
-    // Calcular y mostrar el tiempo restante para el turno nocturno
-    const timeToNightShift = calculateTimeToNightShift();
-    countdownElement.textContent = timeToNightShift;
-
-    // Actualizar cada segundo
-    setTimeout(updateClockAndCountdown, 1000);
-
-    // Llamar a la función para iniciar el reloj y el conteo regresivo
-    updateClockAndCountdown();
-
-
 // Manejador de eventos para los checkboxes
 function setupCheckboxHandlers() {
     const checkboxes = document.querySelectorAll('input[name="response"]');

@@ -1,97 +1,178 @@
+"""
+Tareas asíncronas con Celery
+"""
+
+import logging
 import time
-import ujson as json  # Usar ujson para serialización más rápida
-import redis
-import psycopg2
-import psycopg2.pool
-from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-import pytz
-from celery import Celery
 from datetime import datetime
+from celery import Celery
+from config import Config
+from database import db_manager
+from services import AlarmService, VozService
 
-# Configuración de Celery
-app = Celery('tasks', broker='redis://10.11.10.26:6379/0', backend='redis://10.11.10.26:6379/0')
+logger = logging.getLogger(__name__)
 
-# Cliente Redis
-redis_client = redis.Redis(host='10.11.10.26', port=6379, db=0)
+# Crear instancia de Celery
+celery = Celery('cms_tasks')
 
-# Configuración adicional de Celery
-app.conf.update(
-    task_serializer='json',
-    result_serializer='json',
-    accept_content=['json'],
-    timezone='America/Santiago',
-    enable_utc=True,
-)
-
-# Crear un pool de conexiones para la base de datos
-db_pool = psycopg2.pool.SimpleConnectionPool(
-    1, 20,  # Mínimo 1 y máximo 20 conexiones en el pool
-    host=DB_HOST,
-    port=DB_PORT,
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASS
-)
-
-# Función para obtener una conexión desde el pool de conexiones
-def get_db_connection_from_pool():
-    try:
-        return db_pool.getconn()
-    except Exception as e:
-        print(f"Error obteniendo conexión del pool: {e}")
-        raise
-
-# Función para devolver la conexión al pool
-def release_db_connection_to_pool(conn):
-    try:
-        if conn:
-            db_pool.putconn(conn)
-    except Exception as e:
-        print(f"Error devolviendo la conexión al pool: {e}")
-
-# Tarea de Celery para actualizar la observación en la base de datos
-@app.task
-def update_observation_in_db(alarm_id, observation, observation_timestamp, action):
-    start_time = time.time()  # Marca de tiempo inicial
-    try:
-        # Convertir la marca de tiempo a la zona horaria de Chile
-        chile_tz = pytz.timezone('America/Santiago')
-        observation_timestamp = observation_timestamp.astimezone(chile_tz)
-        
-        # Obtener una conexión del pool de conexiones
-        db_connect_start = time.time()
-        conn = get_db_connection_from_pool()
-        db_connect_end = time.time()  # Marca de tiempo después de la conexión
-        print(f"Conexión a la base de datos desde el pool tomó: {db_connect_end - db_connect_start:.4f} segundos")
-
-        cursor_start = time.time()  # Marca de tiempo antes de la consulta
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                UPDATE alarmas
-                SET observacion = %s, observation_timestamp = %s, observacion_texto = %s, accion = %s
-                WHERE id = %s
-            """, (observation, observation_timestamp, observation, action, alarm_id))
-            conn.commit()
-            cursor_end = time.time()  # Marca de tiempo después de la consulta
-            print(f"Ejecución de la consulta tomó: {cursor_end - cursor_start:.4f} segundos")
-        
-        # Publicar actualización en Redis
-        redis_publish_start = time.time()
-        redis_client.publish('observation_updates', json.dumps({
-            'id': alarm_id,
-            'observation': observation,
-            'observation_timestamp': observation_timestamp.isoformat(),
-            'action': action
-        }))
-        redis_publish_end = time.time()  # Marca de tiempo después de la publicación en Redis
-        print(f"Publicación en Redis tomó: {redis_publish_end - redis_publish_start:.4f} segundos")
-
-    except psycopg2.Error as e:
-        print(f"Error updating observation in the database: {e}")
-    finally:
-        # Asegurarse de liberar la conexión al pool
-        release_db_connection_to_pool(conn)
+def setup_celery(app):
+    """Configurar Celery con Flask"""
     
-    # Tiempo total de ejecución de la tarea
-    total_time = time.time() - start_time
-    print(f"Tiempo total para update_observation_in_db: {total_time:.4f} segundos")
+    celery.conf.update(
+        broker_url=Config.CELERY_BROKER_URL,
+        result_backend=Config.CELERY_RESULT_BACKEND,
+        task_serializer='json',
+        result_serializer='json',
+        accept_content=['json'],
+        timezone='America/Santiago',
+        enable_utc=True,
+        task_routes={
+            'tasks.update_observation_task': {'queue': 'observations'},
+            'tasks.cleanup_old_data': {'queue': 'maintenance'},
+        },
+        beat_schedule={
+            'cleanup-old-data': {
+                'task': 'tasks.cleanup_old_data',
+                'schedule': 3600.0,  # Cada hora
+            },
+        }
+    )
+    
+    class ContextTask(celery.Task):
+        """Tarea con contexto de Flask"""
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+    
+    celery.Task = ContextTask
+    return celery
+
+@celery.task(bind=True, max_retries=3)
+def update_observation_task(self, alarm_id, observation, observation_timestamp, action):
+    """Tarea para actualizar observación de alarma"""
+    try:
+        start_time = time.time()
+        
+        # Convertir timestamp si es string
+        if isinstance(observation_timestamp, str):
+            observation_timestamp = datetime.fromisoformat(observation_timestamp)
+        
+        # Actualizar observación
+        AlarmService.update_observation(alarm_id, observation, observation_timestamp, action)
+        
+        end_time = time.time()
+        logger.info(f"Observación actualizada para alarma {alarm_id} en {end_time - start_time:.4f}s")
+        
+        return {
+            'status': 'success',
+            'alarm_id': alarm_id,
+            'processing_time': end_time - start_time
+        }
+        
+    except Exception as e:
+        logger.error(f"Error actualizando observación {alarm_id}: {e}")
+        
+        # Reintentar si no se ha excedido el límite
+        if self.request.retries < self.max_retries:
+            raise self.retry(countdown=60, exc=e)
+        
+        return {
+            'status': 'error',
+            'alarm_id': alarm_id,
+            'error': str(e)
+        }
+
+@celery.task
+def voz_data_updater_task():
+    """Tarea para actualizar datos de voz"""
+    try:
+        start_time = time.time()
+        
+        # Obtener datos de voz
+        voz_data = VozService.get_voz_data()
+        
+        # Aquí podrías emitir eventos de SocketIO si tienes configurado Redis
+        # o usar otro mecanismo de comunicación
+        
+        end_time = time.time()
+        logger.debug(f"Datos de voz actualizados en {end_time - start_time:.4f}s")
+        
+        return {
+            'status': 'success',
+            'records_count': len(voz_data),
+            'processing_time': end_time - start_time
+        }
+        
+    except Exception as e:
+        logger.error(f"Error actualizando datos de voz: {e}")
+        return {
+            'status': 'error',
+            'error': str(e)
+        }
+
+@celery.task
+def cleanup_old_data():
+    """Tarea de mantenimiento para limpiar datos antiguos"""
+    try:
+        start_time = time.time()
+        
+        # Aquí puedes implementar la lógica de limpieza
+        # Por ejemplo, eliminar registros antiguos, optimizar tablas, etc.
+        
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                # Ejemplo: eliminar datos de voz mayores a 30 días
+                cursor.execute("""
+                    DELETE FROM voz 
+                    WHERE timestamp < NOW() - INTERVAL '30 days'
+                """)
+                deleted_voz = cursor.rowcount
+                
+                # Ejemplo: eliminar alertas mayores a 90 días
+                cursor.execute("""
+                    DELETE FROM alertas 
+                    WHERE timestamp < NOW() - INTERVAL '90 days'
+                """)
+                deleted_alerts = cursor.rowcount
+                
+                conn.commit()
+        
+        end_time = time.time()
+        logger.info(f"Limpieza completada: {deleted_voz} registros de voz, {deleted_alerts} alertas eliminadas en {end_time - start_time:.4f}s")
+        
+        return {
+            'status': 'success',
+            'deleted_voz': deleted_voz,
+            'deleted_alerts': deleted_alerts,
+            'processing_time': end_time - start_time
+        }
+        
+    except Exception as e:
+        logger.error(f"Error en limpieza de datos: {e}")
+        return {
+            'status': 'error',
+            'error': str(e)
+        }
+
+@celery.task
+def health_check():
+    """Tarea de verificación de salud del sistema"""
+    try:
+        # Verificar base de datos
+        db_status = db_manager.test_connection()
+        
+        # Verificar otras dependencias aquí
+        
+        return {
+            'status': 'healthy',
+            'database': 'ok' if db_status else 'error',
+            'timestamp': datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error en health check: {e}")
+        return {
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }

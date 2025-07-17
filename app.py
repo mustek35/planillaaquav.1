@@ -25,7 +25,6 @@ from io import BytesIO
 from base64 import b64encode
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import scoped_session, sessionmaker
-from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS, DATABASE_URL as CONFIG_DB_URL
 from flask_cors import CORS
 from pytz import timezone
 from datetime import datetime
@@ -43,7 +42,7 @@ app = Flask(__name__)
 socketio = SocketIO(app) 
 
 # Configuración de la base de datos
-DATABASE_URL = CONFIG_DB_URL or f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = 'postgresql+psycopg2://orca:estadoscam.@179.57.170.61:24301/Aquachile'
 engine = create_engine(
     DATABASE_URL,
     pool_size=250,
@@ -80,7 +79,7 @@ def get_cached_alarms_data():
 logging.basicConfig(level=logging.INFO)
 CORS(app)  # Habilitar CORS para todas las rutas
 app.config['SECRET_KEY'] = 'remoto753524'
-socketio = SocketIO(app, message_queue='redis://10.11.10.26:6379', async_mode='gevent', max_http_buffer_size=300 * 1024 * 1024)
+socketio = SocketIO(app, async_mode='gevent')
 paused = False
 selected_date = None
 filter_active = False
@@ -288,11 +287,11 @@ def get_db_connection(retries=15, delay=2):
     while attempt < retries:
         try:
             conn = psycopg2.connect(
-                host=DB_HOST,
-                port=DB_PORT,
-                database=DB_NAME,
-                user=DB_USER,
-                password=DB_PASS
+                host='179.57.170.61',
+                port='24301',
+                database='Aquachile',
+                user='orca',
+                password='estadoscam.'
             )
             return conn
         except psycopg2.OperationalError as e:

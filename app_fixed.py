@@ -10,7 +10,7 @@ import sys
 import psycopg2
 import pytz
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time as datetime_time
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -529,6 +529,70 @@ def update_observation_in_db_sync(alarm_id, observation, observation_timestamp=N
         logger.error(f"Error actualizando observación: {e}")
         raise
 
+
+def voz_data_updater():
+    """Tarea en segundo plano para enviar datos de voz"""
+    chile_tz = pytz.timezone('America/Santiago')
+
+    while True:
+        current_time = datetime.now(chile_tz).time()
+        start_time_allowed = datetime_time(18, 30)
+        end_time_allowed = datetime_time(7, 0)
+
+        if start_time_allowed <= current_time or current_time <= end_time_allowed:
+            sleep_interval = 2
+        else:
+            sleep_interval = 2
+
+        voz_data = get_voz_data()
+        alarms_data = get_alarm_data_for_voice()
+        combined_data = voz_data + alarms_data
+        combined_data.sort(key=lambda x: x['timestamp'], reverse=True)
+
+        socketio.emit('voz_data_update', combined_data)
+        socketio.sleep(sleep_interval)
+
+
+def get_alarm_data_for_voice():
+    """Obtener alarmas recientes para la tabla de voz"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        now = datetime.now(pytz.timezone('America/Santiago'))
+        five_minutes_ago = now - timedelta(minutes=5)
+
+        cursor.execute(
+            """
+            SELECT DISTINCT ON (timestamp) timestamp, centro, estado_verificacion AS zonadealarma, '' AS imagen
+            FROM alarmas
+            WHERE timestamp > %s AND estado_verificacion = 'Embarcación'
+            ORDER BY timestamp DESC
+            """,
+            (five_minutes_ago,)
+        )
+
+        records = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        processed = {}
+        for record in records:
+            timestamp_str = record[0].strftime('%Y-%m-%d %H:%M:%S')
+            if timestamp_str not in processed:
+                processed[timestamp_str] = {
+                    'timestamp': timestamp_str,
+                    'centro': record[1],
+                    'zonadealarma': record[2],
+                    'imagen': record[3],
+                }
+
+        return list(processed.values())
+
+    except Exception as e:
+        logger.error(f"Error obteniendo datos de alarmas para voz: {e}")
+        return []
+
 # EVENTOS SOCKETIO
 @socketio.on('connect')
 def handle_connect():
@@ -644,5 +708,6 @@ def setup_signal_handlers():
 
 if __name__ == '__main__':
     setup_signal_handlers()
+    socketio.start_background_task(voz_data_updater)
     logger.info("Iniciando aplicación completa en 127.0.0.1:5300")
     socketio.run(app, host='127.0.0.1', port=5300, debug=True)

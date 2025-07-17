@@ -25,6 +25,7 @@ from io import BytesIO
 from base64 import b64encode
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import scoped_session, sessionmaker
+from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS, DATABASE_URL as CONFIG_DB_URL
 from flask_cors import CORS
 from pytz import timezone
 from datetime import datetime
@@ -42,7 +43,7 @@ app = Flask(__name__)
 socketio = SocketIO(app) 
 
 # Configuración de la base de datos
-DATABASE_URL = 'postgresql+psycopg2://orca:estadoscam.@179.57.170.61:24301/Aquachile'
+DATABASE_URL = CONFIG_DB_URL or f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(
     DATABASE_URL,
     pool_size=250,
@@ -287,11 +288,11 @@ def get_db_connection(retries=15, delay=2):
     while attempt < retries:
         try:
             conn = psycopg2.connect(
-                host='179.57.170.61',
-                port='24301',
-                database='Aquachile',
-                user='orca',
-                password='estadoscam.'
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASS
             )
             return conn
         except psycopg2.OperationalError as e:

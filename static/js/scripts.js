@@ -813,8 +813,6 @@ function updateAlarmsTable(filteredData) {
 
         if (alarm.gestionado) {
             row.classList.add('gestionado-row');
-        } else {
-            row.classList.add('no-gestionado-row');
         }
 
         if (selectedAlarmIds.has(alarm.id)) {
@@ -860,13 +858,11 @@ function updateAlarmRow(alarmId, newObservation, observationTimestamp) {
 
             if (newObservation.trim() !== "") {
                 centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${localTime}</span>`;
-                row.classList.remove('no-gestionado-row');
                 row.classList.add('gestionado-row');
                 row.setAttribute('data-gestionado-time', localTime);
             } else {
                 const existingTime = row.getAttribute('data-gestionado-time');
                 centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${existingTime || localTime}</span>`;
-                row.classList.remove('no-gestionado-row');
                 row.classList.add('gestionado-row');
                 row.setAttribute('data-gestionado-time', existingTime || localTime);
             }

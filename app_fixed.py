@@ -270,8 +270,7 @@ def get_alarms_data(start_time=None, end_time=None):
                 start_time = (end_time - timedelta(days=1)).replace(hour=18, minute=30, second=0, microsecond=0)
 
         cursor.execute("""
-            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion, timestamp,
-                   observation_timestamp, observacion_texto, accion, gestionado_time, gestionado_dentro_de_tiempo
+            SELECT id, centro, duracion, en_modulo, estado_verificacion, observacion, timestamp
             FROM alarmas
             WHERE timestamp BETWEEN %s AND %s
             ORDER BY timestamp DESC
@@ -283,32 +282,22 @@ def get_alarms_data(start_time=None, end_time=None):
         
         alarms_data = []
         for alarm in alarms:
-            gestionado = bool(alarm[5] and str(alarm[5]).strip())
-            gestionado_time = alarm[10]
-            gestionado_dentro = alarm[11]
-            if alarm[7] and gestionado_time is None:
-                gestionado_time = alarm[7]
-                diff_minutes = (gestionado_time - alarm[6]).total_seconds() / 60.0
-                gestionado_dentro = diff_minutes <= 10
-                cursor2 = conn.cursor()
-                cursor2.execute("UPDATE alarmas SET gestionado_time = %s, gestionado_dentro_de_tiempo = %s WHERE id = %s", (gestionado_time, gestionado_dentro, alarm[0]))
-                conn.commit()
-                cursor2.close()
             alarms_data.append({
                 'id': alarm[0],
                 'fecha': alarm[6].strftime('%Y-%m-%d'),
                 'hora': alarm[6].strftime('%H:%M:%S'),
                 'centro': alarm[1],
                 'duracion': format_duration(alarm[2]),
-                'en_modulo': 'Módulo' if alarm[3] else 'Fuera del Módulo',
+                'en_modulo': "Módulo" if alarm[3] else "Fuera del Módulo",
                 'estado_verificacion': alarm[4],
-                'observacion': alarm[5] or '',
-                'gestionado': gestionado,
-                'gestionado_time': gestionado_time.strftime('%H:%M') if gestionado_time else None,
-                'gestionado_dentro_de_tiempo': gestionado_dentro,
-                'observacion_texto': alarm[8] or '',
-                'accion': alarm[9] or ''
+                'observacion': alarm[5] or "",
+                'gestionado': bool(alarm[5] and alarm[5].strip()),
+                'gestionado_time': None,
+                'gestionado_dentro_de_tiempo': None,
+                'observacion_texto': alarm[5] or "",
+                'accion': ""
             })
+        
         return alarms_data
         
     except Exception as e:
@@ -510,49 +499,28 @@ def format_duration(seconds):
         return f"{seconds} segundo{'s' if seconds != 1 else ''}"
 
 def update_observation_in_db_sync(alarm_id, observation, observation_timestamp=None, action=None):
-    """Actualizar observación de alarma y calcular si fue gestionada a tiempo."""
+    """Actualizar observación de alarma de forma síncrona"""
     try:
-        chile_tz = pytz.timezone('America/Santiago')
-        if observation_timestamp is None:
-            observation_timestamp = datetime.now(chile_tz)
-        elif observation_timestamp.tzinfo is None:
-            observation_timestamp = chile_tz.localize(observation_timestamp)
-        else:
-            observation_timestamp = observation_timestamp.astimezone(chile_tz)
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT timestamp FROM alarmas WHERE id = %s", (alarm_id,))
-        result = cursor.fetchone()
-        detection_time = result[0] if result else None
-        gestionado_dentro = None
-        if detection_time:
-            diff_minutes = (observation_timestamp - detection_time).total_seconds() / 60.0
-            gestionado_dentro = diff_minutes <= 10
+        
         cursor.execute("""
             UPDATE alarmas
-            SET observacion = %s,
-                observation_timestamp = %s,
-                observacion_texto = %s,
-                accion = %s,
-                gestionado_time = %s,
-                gestionado_dentro_de_tiempo = %s
+            SET observacion = %s
             WHERE id = %s
-        """, (
-            observation,
-            observation_timestamp,
-            observation,
-            action,
-            observation_timestamp,
-            gestionado_dentro,
-            alarm_id,
-        ))
+        """, (observation, alarm_id))
+        
         conn.commit()
         cursor.close()
         conn.close()
+        
         logger.info(f"Observación actualizada para alarma {alarm_id}")
+        
     except Exception as e:
         logger.error(f"Error actualizando observación: {e}")
         raise
+
+
 def voz_data_updater():
     """Tarea en segundo plano para enviar datos de voz"""
     chile_tz = pytz.timezone('America/Santiago')

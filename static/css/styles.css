@@ -231,7 +231,7 @@ tbody tr:hover {
 
 /* Estilo para filas no gestionadas */
 .no-gestionado-row {
-    background-color: rgba(255, 0, 0, 0.2); /* Tono rojizo transparente */
+    /* Sin color de fondo para las filas no gestionadas */
 }
 .time-icon {
     width: 28px; /* Puedes ajustar el tamaño según tus necesidades */
@@ -281,6 +281,12 @@ tbody tr:hover {
     color: #00FF00; /* Verde eléctrico */
     font-size: 12px; /* Tamaño del checkmark */
     margin-left: 5px; /* Espacio a la izquierda del texto "(Gestionado)" */
+}
+
+/* Texto tachado para centros no gestionados */
+.centro-no-gestionado {
+    color: red;
+    text-decoration: line-through;
 }
 
 /* Estilos para la barra de progreso */

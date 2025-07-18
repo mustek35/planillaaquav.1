@@ -812,10 +812,14 @@ function updateAlarmsTable(filteredData) {
 
         const observationText = localObservations.hasOwnProperty(alarm.id) ? localObservations[alarm.id] : alarm.observacion;
 
+        const centroHtml = alarm.gestionado
+            ? `${alarm.centro} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> ${alarm.gestionado_time || ''}`
+            : `<span class='centro-no-gestionado'>${alarm.centro}</span>`;
+
         row.innerHTML = `
             <td>${alarm.fecha}</td>
             <td>${alarm.hora} ${timeIcon}</td>
-            <td>${alarm.centro} ${alarm.gestionado ? "<span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> " + (alarm.gestionado_time || '') : ""}</td>
+            <td>${centroHtml}</td>
             <td>${alarm.duracion}</td>
             <td>${alarm.en_modulo}</td>
             <td>${getIconForVerificationState(alarm.estado_verificacion)} ${alarm.estado_verificacion}
@@ -835,6 +839,7 @@ function updateAlarmsTable(filteredData) {
 
         row.setAttribute('data-alarm-id', alarm.id);
         row.setAttribute('data-gestionado-time', alarm.gestionado_time); // Almacena la hora gestionada en el atributo de datos
+        row.setAttribute('data-center-name', alarm.centro); // Guarda el nombre del centro para futuras actualizaciones
         // Guardar el timestamp completo de detección para cálculo posterior
         row.setAttribute('data-detection-timestamp', `${alarm.fecha}T${alarm.hora}`);
 
@@ -872,21 +877,20 @@ function updateAlarmRow(alarmId, newObservation, observationTimestamp) {
             row.cells[6].textContent = newObservation;
 
             // Actualizar la celda "centro" para reflejar que la alarma está gestionada o no gestionada
-            const centroCell = row.cells[2];
-            const centroText = centroCell.innerText.split(" (Gestionado)")[0];
+        const centroCell = row.cells[2];
+        const centroText = row.getAttribute('data-center-name');
 
-            if (newObservation.trim() !== "") {
-                centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${localTime}</span>`;
-                row.classList.remove('no-gestionado-row');
-                row.classList.add('gestionado-row');
-                row.setAttribute('data-gestionado-time', localTime);
-            } else {
-                const existingTime = row.getAttribute('data-gestionado-time');
-                centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${existingTime || localTime}</span>`;
-                row.classList.remove('no-gestionado-row');
-                row.classList.add('gestionado-row');
-                row.setAttribute('data-gestionado-time', existingTime || localTime);
-            }
+        if (newObservation.trim() !== '') {
+            centroCell.innerHTML = `${centroText} <span class='gestionado'>(Gestionado)</span><span class='checkmark'>&#10003;</span> <span class='gestionado-time'>${localTime}</span>`;
+            row.classList.remove('no-gestionado-row');
+            row.classList.add('gestionado-row');
+            row.setAttribute('data-gestionado-time', localTime);
+        } else {
+            centroCell.innerHTML = `<span class='centro-no-gestionado'>${centroText}</span>`;
+            row.classList.remove('gestionado-row');
+            row.classList.add('no-gestionado-row');
+            row.removeAttribute('data-gestionado-time');
+        }
         }
     });
 }

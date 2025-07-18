@@ -510,6 +510,11 @@ html {
   .sound-toggle-off {
     background-color: #dc3545; /* Rojo para el estado "apagado" */
   }
+
+  .sound-status {
+    color: #ffffff;
+    margin-left: 5px;
+  }
   .user-info {
     display: flex;
     flex-direction: column; /* O 'row' si prefieres que esté en línea */

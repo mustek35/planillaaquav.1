@@ -15,6 +15,10 @@ let imageFetchTimeout;
 let worker;
 let dataWorker;
 
+const AUTO_OFF_MINUTES = 7 * 60;      // 07:00
+const AUTO_ON_MINUTES = 18 * 60 + 30; // 18:30
+let lastScheduleState = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeSocket();
     initializeWorker();
@@ -138,8 +142,8 @@ function terminateDataWorker() {
 function initializeDOMElements() {
     const savedSoundState = localStorage.getItem('isSoundOn');
     isSoundOn = savedSoundState !== null ? savedSoundState === 'true' : true;
+    checkSoundSchedule();
     localStorage.setItem('isSoundOn', isSoundOn.toString());
-
     updateSoundButton(); // Actualizar el botón basado en el estado actual
 }
 
@@ -165,6 +169,21 @@ function toggleSound() {
     isSoundOn = !isSoundOn;
     localStorage.setItem('isSoundOn', isSoundOn.toString());
     updateSoundButton();
+}
+
+function checkSoundSchedule() {
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    let scheduleOn = !(minutes >= AUTO_OFF_MINUTES && minutes < AUTO_ON_MINUTES);
+    if (lastScheduleState === null) {
+        lastScheduleState = scheduleOn;
+    }
+    if (scheduleOn !== lastScheduleState) {
+        lastScheduleState = scheduleOn;
+        isSoundOn = scheduleOn;
+        localStorage.setItem('isSoundOn', isSoundOn.toString());
+        updateSoundButton();
+    }
 }
 
 function speak(message, callback) {
@@ -744,14 +763,17 @@ socket.on('victron_data_update', function(data) {
 // Función para actualizar el botón de sonido
 function updateSoundButton() {
     const soundToggleButton = document.getElementById('soundToggle');
+    const soundStatusLabel = document.getElementById('soundStatusLabel');
     if (isSoundOn) {
         soundToggleButton.classList.remove('sound-toggle-off');
         soundToggleButton.classList.add('sound-toggle-on');
         soundToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        if (soundStatusLabel) soundStatusLabel.textContent = '';
     } else {
         soundToggleButton.classList.remove('sound-toggle-on');
         soundToggleButton.classList.add('sound-toggle-off');
         soundToggleButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        if (soundStatusLabel) soundStatusLabel.textContent = 'Sonido deshabilitado';
     }
 }
 
@@ -1158,6 +1180,8 @@ function updateClockAndCountdown() {
     // Calcular y mostrar el tiempo restante para el turno nocturno
     const timeToNightShift = calculateTimeToNightShift();
     countdownElement.textContent = timeToNightShift;
+
+    checkSoundSchedule();
 
     // Actualizar cada segundo
     setTimeout(updateClockAndCountdown, 1000);

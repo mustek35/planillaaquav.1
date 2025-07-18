@@ -835,6 +835,11 @@ function updateAlarmsTable(filteredData) {
 
         row.setAttribute('data-alarm-id', alarm.id);
         row.setAttribute('data-gestionado-time', alarm.gestionado_time); // Almacena la hora gestionada en el atributo de datos
+        // Guardar el timestamp completo de detección para cálculo posterior
+        row.setAttribute('data-detection-timestamp', `${alarm.fecha}T${alarm.hora}`);
+
+        // Revisar inmediatamente si corresponde marcar como no gestionado
+        checkNoGestionadoRow(row);
 
         row.addEventListener('dblclick', function() {
             isMultiSelectMode = true;
@@ -885,6 +890,29 @@ function updateAlarmRow(alarmId, newObservation, observationTimestamp) {
         }
     });
 }
+
+// Verifica si una fila debe marcarse como "NO GESTIONADO" por exceder el tiempo
+function checkNoGestionadoRow(row) {
+    const ts = row.getAttribute('data-detection-timestamp');
+    if (!ts) return;
+    const detectionTime = new Date(ts);
+    if (isNaN(detectionTime)) return;
+    const now = new Date();
+    const obsCell = row.cells[6];
+    const isManaged = row.classList.contains('gestionado-row');
+
+    if (!isManaged && now - detectionTime > 10 * 60 * 1000 && !obsCell.textContent.trim()) {
+        obsCell.textContent = 'NO GESTIONADO';
+        obsCell.style.color = 'red';
+        obsCell.style.fontWeight = 'bold';
+    }
+}
+
+// Comprobar periódicamente todas las filas
+setInterval(function() {
+    const rows = document.querySelectorAll('#alarms-table tbody tr');
+    rows.forEach(checkNoGestionadoRow);
+}, 60000);
 
 // Evento para guardar la observación y actualizar el estado de gestionado
 saveBtn.addEventListener('click', function() {

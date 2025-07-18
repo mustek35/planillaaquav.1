@@ -940,6 +940,34 @@ function saveObservation(data) {
     setTimeout(processAlertQueue, 100); // Esto permite que la interfaz no se bloquee
 }
 
+// Aplicar la observación "Sin Observación" a las filas seleccionadas
+function applyNoObservation() {
+    const observationText = 'Sin Observación';
+    const selectedRows = document.querySelectorAll('.selected');
+    if (selectedRows.length === 0) return;
+
+    selectedRows.forEach(row => {
+        const alarmId = row.getAttribute('data-alarm-id');
+        const now = new Date();
+        const gestionadoTime = now.toISOString();
+
+        const data = {
+            id: alarmId,
+            observation: observationText,
+            observation_timestamp: gestionadoTime,
+            action: 'guardado'
+        };
+
+        saveObservation(data);
+        updateAlarmRow(alarmId, observationText, gestionadoTime);
+        row.classList.remove('selected');
+        delete localObservations[alarmId];
+    });
+
+    selectedAlarmIds.clear();
+    isMultiSelectMode = false;
+}
+
 
 function showImagePopup(alarmId, event) {
     fetch(`/fetch_image?alarm_id=${alarmId}`)
@@ -992,6 +1020,12 @@ document.addEventListener('contextmenu', function(event) {
         editButton.classList.add('menu-item');
         contextMenu.appendChild(editButton);
 
+        // Botón para marcar "Sin Observación"
+        const noObsButton = document.createElement('div');
+        noObsButton.textContent = 'Sin Observación';
+        noObsButton.classList.add('menu-item');
+        contextMenu.appendChild(noObsButton);
+
         editButton.addEventListener('click', function() {
             const textarea = document.getElementById('editObservation');
             let text = '';
@@ -1004,6 +1038,11 @@ document.addEventListener('contextmenu', function(event) {
             overlay.style.display = 'block';
             modal.style.display = 'block';
             contextMenu.remove(); // Elimina el menú al abrir el modal
+        });
+
+        noObsButton.addEventListener('click', function() {
+            applyNoObservation();
+            contextMenu.remove();
         });
 
         document.body.appendChild(contextMenu);
